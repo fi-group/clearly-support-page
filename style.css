@@ -186,7 +186,6 @@ li {
     .left-sidebar {
         width: 100%; /* Full width */
         height: auto; /* Auto height */
-        /* Add logic here or via JS to make it a collapsible menu if needed */
     }
      .content-card {
         flex-basis: 100%; /* One card per row */
