@@ -1,89 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clearly Support Hub</title>
+    <title>Clearly Support Hub - Home</title>
     <link rel="stylesheet" href="style.css">
-    </head>
+</head>
+
 <body>
-
     <div class="page-container">
-
         <aside class="sidebar left-sidebar">
-            <div class="logo">
-                CLEARLY UPDATES
-            </div>
+            <div class="logo">CLEARLY UPDATES</div>
             <nav class="main-nav">
                 <ul>
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#">Updates</a></li>
-                    <li><a href="#">Known Issues</a></li>
-                    <li><a href="#">Versions</a></li>
-                    <li><a href="faq.html">FAQ</a></li>
-                    <li><a href="#">Contact</a></li>
-                    </ul>
-                        <h3>Feedback</h3>
-                        <p>We are always interested in what you think. Let us know!</p>
-                        <p><a href="#">Click here to leave your feedback</a></p>
+                    <li class="active"><a href="home.html">Home</a></li>
+                    <li><a href="VERSIONS/versions.html">Versions</a></li>
+                    <li><a href="KNOWN_ISSUES/known_issues.html">Known Issues</a></li>
+                    <li><a href="FAQ/faq.html">FAQ</a></li>
+                    <li><a href="CONTACT/contact.html">Contact</a></li>
+                </ul>
+                <h3>Feedback</h3>
+                <p>We are always interested in what you think. Let us know!</p>
+                <p><a href="mailto:support@futureinsight.nl?subject=Feedback%20for%20Clearly">Click here to leave your feedback</a></p>
             </nav>
-        </aside>
+    </aside>
 
         <main class="main-content">
-            <header class="main-header">
-                <h1>Support Home</h1>
+
+            <header class="product-tabs">
+                <button class="tab-link" data-product="3d">3D</button>
+                <button class="tab-link" data-product="bim">BIM</button>
+                <button class="tab-link" data-product="hub">Hub</button>
+                <button class="tab-link" data-product="projects">Projects</button>
+            </header>
+
+            <div class="product-content" data-product="3d" style="display: none;">
+                <header class="main-header">
+                    <h1>Clearly.3D-City Home</h1>
                 </header>
-
-            <div class="content-grid">
-
-                <section class="content-card">
-                    <h2>Latest Product Updates</h2>
-                    <ul>
-                        <li>Update XYZ was released [Date] - <a href="#">Read more...</a></li>
-                        <li>Scheduled Maintenance on [Date] - <a href="#">Details...</a></li>
-                        <li>Patch 1.2.3 addressing issue #456 - <a href="#">More info...</a></li>
-                        </ul>
-                    <a href="#" class="card-link">View All Updates</a>
-                </section>
-
-                <section class="content-card">
-                    <h2>Current Known Issues</h2>
-                    <ul>
-                        <li>Issue #789: Slow loading on certain browsers (Investigating)</li>
-                        <li>Issue #780: Button alignment off on mobile (Workaround available) <a href="#">See workaround</a></li>
-                        <li>Issue #750: Feature X occasionally throws error (Fix planned for v1.3)</li>
-                    </ul>
-                     <a href="#" class="card-link">View All Issues</a>
-                </section>
-
-                <section class="content-card">
-                    <h2>Version Information</h2>
-                    <p>Current Version: <strong>1.2.3</strong> (Released: YYYY-MM-DD)</p>
-                    <p>Next Major Release: <strong>v1.3.0</strong> (Expected: Q3 2025)</p>
-                    <ul>
-                        <li><a href="#">View Full Release Notes</a></li>
-                        <li><a href="#">Download Links</a></li>
-                    </ul>
-                </section>
-
-                 <section class="content-card">
-                    <h2>FAQs</h2>
-                    <ul>
-                        <li><a href="#">Updates</a></li>
-                        <li><a href="#">Known Issues</a></li>
-                        <li><a href="#">Versions</a></li>
-                        <li><a href="faq.html">FAQ</a></li>  
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </section>
-
+                <div class="content-grid">
+                    <section class="content-card">Please use <strong>the tabs on the left</strong> to navigate through our support center.
+                        <p>Here you can find the latest updates, known issues, and frequently asked questions.</p>
+                        <p>If you wish to look at a different product, please select it from the tabs above.</p>
+                    </section>
+                </div>
+                <div class="home-image">
+                    <img src="../images/clearly3d.gif" alt="Clearly 3D GIF" class="home-image">
+                </div>
             </div>
-        </main>
-    </div>
 
-    <footer class="main-footer">
+            <div class="product-content" data-product="bim" style="display: none;">
+                <header class="main-header">
+                    <h1>Clearly.BIM Home</h1>
+                </header>
+                <div class="content-grid">
+                    <section class="content-card">Please use <strong>the tabs on the left</strong> to navigate through our support center.
+                        <p>Here you can find the latest updates, known issues, and frequently asked questions.</p>
+                        <p>If you wish to look at a different product, please select it from the tabs above.</p>
+                    </section>
+                </div>
+                <div class="home-image">
+                    <img src="../images/bim.png" alt="Clearly BIM" class="home-image">
+                </div>
+            </div>
+
+            <div class="product-content" data-product="hub" style="display: none;">
+                <header class="main-header">
+                    <h1>Clearly.Hub Home</h1>
+                </header>
+                <div class="content-grid">
+                    <section class="content-card">Please use <strong>the tabs on the left</strong> to navigate through our support center.
+                        <p>Here you can find the latest updates, known issues, and frequently asked questions.</p>
+                        <p>If you wish to look at a different product, please select it from the tabs above.</p>
+                    </section>
+                </div>
+            </div>
+
+            <div class="product-content" data-product="projects" style="display: none;">
+                <header class="main-header">
+                    <h1>Clearly.Projects Home</h1>
+                </header>
+                <div class="content-grid">
+                    <section class="content-card">Please use <strong>the tabs on the left</strong> to navigate through our support center.
+                        <p>Here you can find the latest updates, known issues, and frequently asked questions.</p>
+                        <p>If you wish to look at a different product, please select it from the tabs above.</p>
+                    </section>
+                </div>
+                <div class="home-image">
+                    <img src="../images/projects.png" alt="Clearly Projects" class="home-image">
+                </div>
+            </div>
+
+        </main> </div> <footer class="main-footer">
         Copyright © 2025 Clearly - Future Insight
     </footer>
 
+    <script src="app.js"></script>
 </body>
+
 </html>
