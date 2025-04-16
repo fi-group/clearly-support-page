@@ -61,8 +61,7 @@ li {
 
 /* Style for the active tab */
 .tab-link.active {
-    background-color: #fff; /* Keep white background */
-    /* Adjust border - top/sides accent, make bottom match background to seem "connected" */
+    background-color: #fff;
     border-color: #0bb0a0 #0bb0a0 #fff;
     color: #0bb0a0;
     border-top-width: 1px;
@@ -191,7 +190,7 @@ li {
 /* Style for the H3 (FAQ Question) generated from Markdown */
 .markdown-container h3 {
     font-size: 1.2em;     
-    color: #2e3338;      
+    color: #1c9892;      
     font-weight: bold;   
     margin-bottom: 10px;  /* Space between question and answer */
     margin-top: 10px;     
@@ -206,7 +205,8 @@ li {
     font-size: 1em;      
     line-height: 1.6;    
     margin-top: 0;        
-    margin-bottom: 1em;   
+    margin-bottom: 1em; 
+    padding-left: 15px; 
 }
 
 /* Ensure paragraphs directly after the H3 don't have extra top space */
@@ -233,13 +233,13 @@ li {
     .right-sidebar {
         display: none; /* Hide right sidebar */
     }
-     .content-card {
+    .content-card {
         flex-basis: calc(50% - 10px); /* Two cards per row */
-     }
-     .page-container {
+    }
+    .page-container {
          /* Recalculate min-height if footer/tabs height changes */
          min-height: calc(100vh - 40px - 52px); /* Example */
-     }
+    }
 }
 
 /* Small Screens */

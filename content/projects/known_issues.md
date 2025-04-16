@@ -1,4 +1,4 @@
-This page lists known issues for the Clearly 3D product that are currently being tracked or have recently been resolved.
+This page lists known issues for Clearly.Projects that are currently being tracked or have recently been resolved.
 
 ---
 
