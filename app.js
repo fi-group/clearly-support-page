@@ -1,29 +1,26 @@
-// File: app.js
-
 // Wait until the HTML document is fully loaded and parsed
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- Product Configuration ---
-    const PRODUCTS = ['3d', 'bim', 'hub', 'projects']; // Your product IDs
-    const DEFAULT_PRODUCT = 'projects'; // Set your default product
+    const PRODUCTS = ['3d', 'bim', 'hub', 'projects'];
+    const DEFAULT_PRODUCT = 'projects'; 
 
     // --- Get DOM Elements ---
     const productTabs = document.querySelectorAll('.product-tabs .tab-link');
     const productContents = document.querySelectorAll('.main-content .product-content');
-    const pageContainer = document.querySelector('.page-container'); // Optional: for global styles
+    const pageContainer = document.querySelector('.page-container');
 
     // --- Determine Current Page Type ---
-    // Derives page type from URL path. Adjust if your URLs differ.
+    // Derives page type from URL path.
     function getPageType() {
         const path = window.location.pathname;
         // Check for subdirectories first
         if (path.includes('/FAQ/')) return 'faq';
         if (path.includes('/VERSIONS/')) return 'versions';
         if (path.includes('/KNOWN_ISSUES/')) return 'known_issues';
-        // Add checks for /CONTACT/, /UPDATES/ etc. if needed
-        // Check for home page (at root or named home.html)
-        if (path.endsWith('home.html') || path.endsWith('/') || path === '') return 'home';
-        // Fallback if no match (e.g., root index might be home)
+        // Check for home page 
+        if (path.endsWith('index.html') || path.endsWith('/') || path === '') return 'home';
+        // Fallback if no match
         return 'home';
     }
     const currentPageType = getPageType();
@@ -43,9 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Determine the correct base path for the content file
-        // If the current HTML page is at the root (like home.html), path is 'content/...'
+        // If the current HTML page is at the root (like index.html), path is 'content/...'
         // If the current HTML page is in a subdirectory (like FAQ/faq.html), path is '../content/...'
-        const isRootPage = (window.location.pathname.endsWith('home.html') || window.location.pathname.endsWith('/'));
+        const isRootPage = (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/'));
         const basePath = isRootPage ? '' : '../'; // Go up one level if not root
         const filePath = `${basePath}content/${productId}/${pageType}.md`;
 
@@ -67,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Check if Marked.js library is loaded
             if (typeof marked === 'undefined') {
-                 throw new Error("Marked.js library is not loaded. Please include it in your HTML.");
+                throw new Error("Marked.js library is not loaded. Please include it in your HTML.");
             }
 
             // Convert Markdown text to HTML using Marked.js
@@ -140,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let initialProduct = DEFAULT_PRODUCT; // Start with the default
     try {
         const storedProduct = localStorage.getItem('selectedProduct');
-        // Use stored product if it's valid and exists in our PRODUCTS list
+        // Use stored product if it's valid and exists in PRODUCTS list
         if (storedProduct && PRODUCTS.includes(storedProduct)) {
             initialProduct = storedProduct;
         } else {
