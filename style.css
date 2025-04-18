@@ -5,278 +5,343 @@
     padding: 0;
 }
 
+html {
+    height: 100%;
+}
+
 body {
+    margin: 0;
     font-family: sans-serif;
     background-color: #f4f7f6; /* Light grey background */
     color: #333;
     line-height: 1.6;
+    height: 100vh; /* Force body to viewport height */
+    overflow: hidden; /* Prevent body from scrolling */
 }
 
 a {
-    color: #0bb0a0;
+    color: #2596be; /* Updated link color */
     text-decoration: none;
 }
-
 a:hover {
     text-decoration: underline;
 }
-
 ul {
     list-style: none;
     padding-left: 0;
 }
-
 li {
      margin-bottom: 0.5em; /* Spacing between list items */
 }
 
-/* === Product Tabs Styling === */
-.product-tabs {
-    background: none;
-    border-bottom: 2px solid #0bb0a0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-bottom: 20px;
-}
-
-.tab-link {
-    padding: 10px 20px;
-    border: 1px solid #dee2e6;
-    border-bottom: none;
-    background-color: #f8f9fa;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: bold;
-    color: #495057;
-    border-radius: 4px 4px 0 0;
-    position: relative;
-    transition: background-color 0.2s ease;
-}
-
-.tab-link:hover {
-    background-color: #e9ecef; /* Slightly darker on hover */
-    color: #333;
-}
-
-/* Style for the active tab */
-.tab-link.active {
-    background-color: #fff;
-    border-color: #0bb0a0 #0bb0a0 #fff;
-    color: #0bb0a0;
-    border-top-width: 1px;
-    border-left-width: 1px;
-    border-right-width: 1px;
-}
-
-/* === Page Container - Flexbox Layout === */
+/* === Page Container - Main Flex Row, Fixed Height === */
 .page-container {
-    display: flex;
-    min-height: calc(100vh - 40px - 52px); /* Adjusted height assuming 40px footer and roughly 52px tabs header */
-    /* border-top: 1px solid #dee2e6; /* Optional: border to align with tabs visually */
+    display: flex; /* Sidebar and content-wrapper side-by-side */
+    height: 100vh; /* Fill viewport height */
+    overflow: hidden; /* Prevent this container from scrolling */
 }
 
-/* === Sidebars Common Styling === */
-.sidebar {
-    padding: 20px;
-}
-
-/* === Left Sidebar === */
+/* === Left Sidebar (Internally Scrollable) === */
 .left-sidebar {
     width: 220px; /* Fixed width */
     flex-shrink: 0; /* Prevent sidebar from shrinking */
-    background-color: #343a40; /* Dark background */
-    color: #f8f9fa; /* Light text */
-    padding: 20px;
+    background-color: #343a40;
+    color: #f8f9fa;
+    /* padding: 20px; /* Padding applied internally now */
+    /* Internal flex layout for logo/nav/feedback */
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Fill parent height */
+    overflow-y: auto; /* Allow sidebar ITSELF to scroll if needed */
+    /* position: sticky is removed */
 }
-
+/* Add padding to an inner wrapper if needed, or adjust children */
 .left-sidebar .logo {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-bottom: 30px;
+    flex-shrink: 0;
+    padding: 20px 20px 15px 20px; /* Padding around logo */
+    margin-bottom: 0; /* Remove margin, use padding */
+    border-bottom: #6c757d 1px solid;
     text-align: center;
-    color: #f8f9fa; /* Ensure logo color is light */
 }
-
-.left-sidebar .main-nav ul li a {
-    color: #adb5bd; /* Lighter grey for links */
+.left-sidebar .logo img {
     display: block;
-    padding: 10px 15px;
-    border-radius: 4px;
-    margin-bottom: 5px;
+    max-width: 70%;
+    height: auto;
+    margin: 0 auto 10px auto;
 }
-
+.left-sidebar .logo .logo-text {
+    display: block;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #f8f9fa;
+    margin-top: 10px;
+    text-align: center;
+}
+.left-sidebar .main-nav {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Make nav area fill space */
+    padding: 20px; /* Add padding around nav items */
+    list-style: none;
+    margin: 0;
+    overflow-y: auto; /* Allow nav section itself to scroll if needed, separate from feedback */
+}
+.left-sidebar .main-nav ul {
+     flex-shrink: 0;
+     padding: 0;
+     margin: 0;
+}
+.left-sidebar .main-nav ul li a {
+    color: #adb5bd; display: block; padding: 10px 15px; border-radius: 4px; margin-bottom: 5px; text-decoration: none; transition: background-color 0.2s ease, color 0.2s ease;
+}
 .left-sidebar .main-nav ul li.active a,
 .left-sidebar .main-nav ul li a:hover {
-    background-color: #495057; /* Darker background on hover/active */
-    color: #fff; /* White text on hover/active */
-    text-decoration: none;
+    background-color: #495057; color: #fff; text-decoration: none;
 }
 
+/* Feedback Section pushed to bottom */
+/* Note: If .main-nav scrolls, feedback might not be ideal. Consider moving feedback outside .main-nav if needed */
 .left-sidebar .main-nav h3 {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    font-size: 1.1em;
-    color: #adb5bd;
+    margin-bottom: 10px; font-size: 1.1em; color: #adb5bd;
+    margin-top: auto; /* Pushes down */
+    padding-top: 20px; border-top: 1px solid #495057; flex-shrink: 0; /* Prevent shrinking */
 }
-.left-sidebar .main-nav p {
-    font-size: 0.9em;
-    margin-bottom: 5px;
-    color: #adb5bd;
-}
-.left-sidebar .main-nav p a {
-    color: #0bb0a0;
-    font-weight: bold;
-}
-.left-sidebar .main-nav p a:hover {
-    text-decoration: underline;
-}
+.left-sidebar .main-nav p { font-size: 0.9em; margin-bottom: 5px; color: #adb5bd; flex-shrink: 0; }
+.left-sidebar .main-nav p a { color: #58b4cc; font-weight: bold; }
+.left-sidebar .main-nav p a:hover { text-decoration: underline; }
+.left-sidebar .main-nav .company-link-paragraph { margin-top: 10px; text-align: center; flex-shrink: 0; }
+.left-sidebar .main-nav .company-link-paragraph a { font-size: 0.9em; color: #adb5bd; font-weight: normal; text-decoration: none; }
+.left-sidebar .main-nav .company-link-paragraph a:hover { color: #fff; text-decoration: underline; }
 
-/* === Main Content Area === */
-.main-content {
-    flex-grow: 1; /* Takes up remaining space */
-    padding: 20px;
-    background-color: #fff; /* White background for content */
-}
 
-.main-header {
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #dee2e6; /* Light border */
-}
-
-.main-header h1 {
-    font-size: 1.8em;
-    color: #495057;
-}
-
-/* === Content Grid - Flexbox for Cards === */
-.content-grid {
+/* === Wrapper for Content and Footer (Scrollable Area) === */
+.content-footer-wrapper {
     display: flex;
-    flex-wrap: wrap; /* Allow cards to wrap on smaller screens */
-    gap: 20px; /* Spacing between cards */
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0; /* Prevents content from breaking flex */
+    height: 100vh; /* Full height */
+    overflow-y: auto;
+    background-color: #fff;
 }
 
-/* === Content Cards === */
-.content-card {
-    background-color: #f8f9fa; /* Very light grey */
-    border: 1px solid #dee2e6; /* Light border */
-    border-radius: 5px;
+/* === Main Content Area (Holds Tabs + Scrollable Content) === */
+.main-content {
+    padding: 0;
+    position: relative; /* Context for absolute positioning if needed */
+    flex-grow: 1; /* Let it take space between sticky tabs/footer */
+    display: flex; /* Use flex column to manage tabs and scroll area */
+    flex-direction: column;
+    overflow: hidden; /* Hide potential overflow before scroll area */
+}
+
+.community-content {
+    position: relative; /* Context for absolute positioning if needed */
+    flex-grow: 1; /* Let it take space between sticky tabs/footer */
+    display: flex; /* Use flex column to manage tabs and scroll area */
+    flex-direction: column;
+    overflow: hidden; /* Hide potential overflow before scroll area */
+    background-color: #171b22; /* Background color for community content */
     padding: 20px;
-    flex: 1 1 300px; /* Flex properties: grow, shrink, basis (min-width) */
-    min-width: 280px; /* Ensure cards don't get too narrow */
 }
 
-.content-card h2 {
-    font-size: 1.2em;
-    margin-bottom: 15px;
-    color: #495057;
-    border-bottom: 1px solid #e9ecef;
-    padding-bottom: 8px;
+.contact-content {
+    position: relative; /* Context for absolute positioning if needed */
+    flex-grow: 1; /* Let it take space between sticky tabs/footer */
+    display: flex; /* Use flex column to manage tabs and scroll area */
+    flex-direction: column;
+    overflow: hidden; /* Hide potential overflow before scroll area */
+    padding: 20px;
 }
 
-.content-card ul li {
-    font-size: 0.95em;
+
+
+/* --- Product Tabs (Sticky inside Wrapper) --- */
+.product-tabs {
+    position: sticky;
+    top: 0; /* Stick to top of content-footer-wrapper */
+    z-index: 10;
+    background-color: #fff; /* Background to hide scrolling content */
+    padding: 10px 20px 0; /* Padding inside tabs */
+    border-bottom: 2px solid #58b4cc;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    flex-shrink: 0; /* Prevent tabs from shrinking */
+}
+/* ... Keep .tab-link and .tab-link.active styles ... */
+.tab-link { padding: 10px 20px; border: 1px solid #dee2e6; border-bottom: none; background-color: #f8f9fa; cursor: pointer; font-size: 1em; font-weight: bold; color: #495057; border-radius: 4px 4px 0 0; position: relative; transition: background-color 0.2s ease;}
+.tab-link:hover { background-color: #e9ecef; color: #333;}
+.tab-link.active { background-color: #fff; border-color: #58b4cc #58b4cc #fff; color: #58b4cc; border-top-width: 1px; border-left-width: 1px; border-right-width: 1px;}
+
+.scrollable-area {
+    flex-grow: 1; /* Takes space between tabs and footer padding */
+    overflow-y: auto; /* Scrollbar appears here */
+    padding: 20px; /* Padding around the scrolling content */
 }
 
-.card-link {
-    display: inline-block;
-    margin-top: 15px;
-    font-size: 0.9em;
-    font-weight: bold;
-}
+/* --- Page Type Navigation (Inside Product Content) --- */
+/* These styles apply within .scrollable-area .product-content */
+.page-type-nav { margin-top: 0; margin-bottom: 25px; border-bottom: 1px solid #dee2e6; padding-bottom: 5px; } /* Removed side margins */
+.page-type-nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.page-type-nav li { margin-bottom: -1px; }
+.page-link { display: block; padding: 8px 15px; color: #495057; text-decoration: none; border: 1px solid transparent; border-bottom: none; border-radius: 4px 4px 0 0; font-size: 0.95em; font-weight: 500; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
+.page-link:hover { background-color: #f8f9fa; border-color: #e9ecef #e9ecef transparent; color: #2596be; }
+.page-link.active { color: #2596be; font-weight: bold; background-color: #fff; border-color: #dee2e6 #dee2e6 #fff; }
 
-/* === FAQ Specific Styles === */
-/* Style for the H3 (FAQ Question) generated from Markdown */
-.markdown-container h3 {
-    font-size: 1.2em;     
-    color: #1c9892;      
-    font-weight: bold;   
-    margin-bottom: 10px;  /* Space between question and answer */
-    margin-top: 10px;     
-}
 
-/* Remove extra top margin from the very first H3 inside the container */
-.markdown-container h3:first-of-type {
-    margin-top: 0;
-}
+/* --- Main Content Headers / Grids / Cards / Markdown --- */
+/* These styles apply within .scrollable-area .product-content */
+.main-header { margin-bottom: 20px; }
+.main-header h1 { font-size: 1.8em; color: #495057; }
+.content-grid { display: flex; flex-wrap: wrap; gap: 20px; }
+.content-card { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; padding: 20px; flex: 1 1 300px; min-width: 280px; }
+.content-card h2 { font-size: 1.2em; margin-bottom: 15px; color: #495057; border-bottom: 1px solid #e9ecef; padding-bottom: 8px; }
+.content-card ul li { font-size: 0.95em; }
+.card-link { display: inline-block; margin-top: 15px; font-size: 0.9em; font-weight: bold; }
+.markdown-container { line-height: 1.7; color: #333; }
+.markdown-container h1 { font-size: 1.8em; color: #495057; margin-top: 1.5em; margin-bottom: 0.8em; padding-bottom: 0.3em; border-bottom: 1px solid #dee2e6; }
+.markdown-container h2 { font-size: 1.5em; color: #495057; margin-top: 1.4em; margin-bottom: 0.7em; }
+.markdown-container h3 { font-size: 1.2em; color: #58b4cc; font-weight: bold; margin-bottom: 10px; margin-top: 1.3em; }
+.markdown-container h4 { font-size: 1.1em; color: #495057; margin-top: 1.2em; margin-bottom: 0.5em; font-weight: bold; }
+.markdown-container h1:first-child, .markdown-container h2:first-child, .markdown-container h3:first-of-type, .markdown-container h4:first-child { margin-top: 0; }
+.markdown-container p { font-size: 1em; line-height: 1.6; margin-top: 0; margin-bottom: 1.2em; padding-left: 0; }
+.markdown-container h3 + p { margin-top: 0; }
+.markdown-container a { color: #2596be; text-decoration: underline; }
+.markdown-container a:hover { color: #1a6d8f; }
+.markdown-container ul, .markdown-container ol { margin-top: 0.5em; margin-bottom: 1.2em; padding-left: 30px; }
+.markdown-container ul { list-style: disc; }
+.markdown-container ol { list-style: decimal; }
+.markdown-container li { margin-bottom: 0.6em; }
+.markdown-container li ul, .markdown-container li ol { margin-top: 0.6em; margin-bottom: 0.6em; }
+.markdown-container strong { font-weight: bold; }
+.markdown-container em { font-style: italic; }
+.markdown-container blockquote { border-left: 4px solid #e0e0e0; padding: 10px 15px; margin: 1.5em 0; color: #555; background-color: #f8f9fa; border-radius: 0 4px 4px 0; }
+.markdown-container blockquote p { margin-bottom: 0.5em; }
+.markdown-container blockquote p:last-child { margin-bottom: 0; }
+.markdown-container code { background-color: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; font-family: "Courier New", Courier, monospace; font-size: 0.9em; color: #333; }
+.markdown-container pre { background-color: #f1f1f1; border: 1px solid #e0e0e0; padding: 15px; border-radius: 4px; overflow-x: auto; margin: 1.5em 0; font-family: "Courier New", Courier, monospace; font-size: 0.9em; line-height: 1.5; }
+.markdown-container pre code { background-color: transparent; padding: 0; border: none; color: inherit; font-size: inherit; }
+.markdown-container hr { border: 0; border-top: 2px solid #e0e0e0; margin: 2.5em 0; }
 
-.markdown-container p {
-    font-size: 1em;      
-    line-height: 1.6;    
-    margin-top: 0;        
-    margin-bottom: 1em; 
-    padding-left: 15px; 
-}
 
-/* Ensure paragraphs directly after the H3 don't have extra top space */
-.markdown-container h3 + p {
-    margin-top: 0;
-}
-
-/* === Footer === */
+/* === Footer (Sticky inside Wrapper) === */
 .main-footer {
+    /* Make footer stick to the bottom of the scrolling wrapper */
+    position: sticky;
+    bottom: 0;
+    z-index: 10; /* Keep above scrolling content */
+
+    /* Styling */
+    background-color: #e9ecef; /* Needs background to hide content */
     text-align: center;
     padding: 10px;
-    background-color: #e9ecef;
     color: #6c757d;
     font-size: 0.9em;
     border-top: 1px solid #dee2e6;
-    height: 40px; /* Keep fixed height if you subtract it from page-container */
-    line-height: 20px; /* Center text vertically roughly */
+    height: 40px;
+    line-height: 20px;
+    box-sizing: border-box;
+    flex-shrink: 0; /* Prevent footer from shrinking */
 }
+
 
 /* === Responsive Adjustments === */
-
-/* Medium Screens */
 @media (max-width: 992px) {
-    .right-sidebar {
-        display: none; /* Hide right sidebar */
-    }
-    .content-card {
-        flex-basis: calc(50% - 10px); /* Two cards per row */
-    }
-    .page-container {
-         /* Recalculate min-height if footer/tabs height changes */
-         min-height: calc(100vh - 40px - 52px); /* Example */
-    }
+    .right-sidebar { display: none; }
+    .content-card { flex-basis: calc(50% - 10px); }
 }
 
-/* Small Screens */
 @media (max-width: 768px) {
+    body {
+        height: auto; /* Allow body height to adjust */
+        overflow: visible; /* Allow body scrollbar */
+    }
     .page-container {
-        flex-direction: column; /* Stack everything vertically */
-        min-height: fit-content; /* Let height be determined by content */
+        flex-direction: column;
+        height: auto; /* Allow height to adjust */
+        min-height: auto;
+        overflow: visible; /* Allow scroll */
     }
     .left-sidebar {
-        width: 100%; /* Full width */
-        height: auto; /* Auto height */
-        border-bottom: 1px solid #495057; /* Darker border for separation */
+        width: 100%;
+        height: auto;
+        position: static; /* Turn off sticky */
+        border-bottom: 1px solid #495057;
+        overflow-y: visible; /* Turn off internal scroll */
     }
-     .content-card,
-     .faq-item {
-        flex-basis: 100%; /* One card/item per row */
-     }
-     .main-footer {
-        position: relative; /* Ensure footer stays below */
-     }
-     .main-content {
-        padding: 15px; /* Adjust padding */
-     }
-     .product-tabs {
-         padding: 10px 15px 0; /* Adjust padding */
-     }
-     .tab-link {
-         padding: 8px 15px; /* Smaller padding */
-         font-size: 0.9em; /* Smaller font */
-     }
+    .content-footer-wrapper {
+        height: auto; /* Allow height to adjust */
+        overflow-y: visible; /* Turn off internal scroll */
+    }
+    .product-tabs {
+        position: static; /* Turn off sticky */
+        padding: 10px 15px 0;
+    }
+    .main-footer {
+        position: static; /* Turn off sticky */
+    }
+    .main-content { padding: 0; /* Remove padding, applied to scrollable area now */ }
+    .scrollable-area { padding: 15px; } /* Adjust padding */
+    .content-card { flex-basis: 100%; }
+    .tab-link { padding: 8px 15px; font-size: 0.9em; }
+    .page-type-nav ul { gap: 5px; }
+    .page-link { padding: 6px 10px; font-size: 0.9em; }
 }
 
-/* Homepage Specific Adjustments */
-.home-image {
-    padding-top: 20px; 
-    max-width: 100%;
-    height: 600px; 
-    display: block; /* Centering */
-    margin: 0 auto; /* Center image */
-}
+/* === Other Page Specific Adjustments === */
+.home-image { padding-top: 20px; max-width: 100%; height: auto; display: block; margin: 0 auto; }
+.contact-header-image { max-width: 960px; margin: 0 auto 25px auto; overflow: hidden; border-radius: 5px; line-height: 0; }
+.contact-header-image img { display: block; width: 100%; height: auto; max-width: 100%; }
+.contact-list { padding-left: 20px; }
+.contact-item { padding-left: 20px; }
+.main-giscus {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #272a2d;
+    }
+
+.giscus-header {
+    color: #f8f9fa;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #dee2e6; 
+    }
+
+.community-intro {
+    font-size: 1.6em;
+    line-height: 1.6;
+    color: #58b4cc;
+    margin-bottom: 20px;
+    }
+    
+.community-intro2 {
+    font-size: 1.2em;
+    line-height: 1.6;
+    color: #c7ced6;
+    margin-bottom: 20px;
+    }
+
+.community-image {
+    max-width: 10%;
+    height: auto;
+    display: block;
+    margin: 0 auto 20px auto;
+    border-radius: 5px;
+    overflow: hidden;
+    line-height: 0;
+    }
+
+.community-intro3 {
+    font-size: 1em;
+    line-height: 1.6;
+    color: #b7bbbf;
+    margin-bottom: 20px;
+    /*center text*/
+    text-align: center;
+    }
+
+.giscus-container {
+    padding: 20px;
+    margin-top: 20px; /* Space above the comments section */
+    }
+
