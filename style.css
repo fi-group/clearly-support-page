@@ -238,13 +238,31 @@ li {
     padding: 10px;
     color: #6c757d;
     font-size: 0.9em;
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid #6c757d;
     height: 40px;
     line-height: 20px;
     box-sizing: border-box;
     flex-shrink: 0; /* Prevent footer from shrinking */
 }
 
+.community-footer {
+    /* Make footer stick to the bottom of the scrolling wrapper */
+    position: sticky;
+    bottom: 0;
+    z-index: 10; /* Keep above scrolling content */
+
+    /* Styling */
+    background-color: #3d434b; /* Needs background to hide content */
+    text-align: center;
+    padding: 10px;
+    color: #c2c5c8;
+    font-size: 0.9em;
+    border-top: 1px solid #dee2e6;
+    height: 40px;
+    line-height: 20px;
+    box-sizing: border-box;
+    flex-shrink: 0; /* Prevent footer from shrinking */
+}
 
 /* === Responsive Adjustments === */
 @media (max-width: 992px) {
@@ -281,6 +299,10 @@ li {
     .main-footer {
         position: static; /* Turn off sticky */
     }
+    .community-footer {
+        position: static; /* Turn off sticky */
+    }
+
     .main-content { padding: 0; /* Remove padding, applied to scrollable area now */ }
     .scrollable-area { padding: 15px; } /* Adjust padding */
     .content-card { flex-basis: 100%; }
