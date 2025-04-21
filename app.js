@@ -3,22 +3,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Product Configuration ---
     const PRODUCTS = ['3d', 'bim', 'hub', 'projects'];
-    const DEFAULT_PRODUCT = 'projects'; 
+    const DEFAULT_PRODUCT = 'projects'; // Your default product
 
     // --- Get DOM Elements ---
+    // Adjusted selector to potentially find content divs within scrollable-area if that structure is used
     const productTabs = document.querySelectorAll('.product-tabs .tab-link');
-    const productContents = document.querySelectorAll('.main-content .product-content');
+    const productContents = document.querySelectorAll('.main-content .product-content, .scrollable-area .product-content');
     const pageContainer = document.querySelector('.page-container');
 
     // --- Determine Current Page Type ---
-    // Derives page type from URL path.
+    // Derives page type from URL path. Adjust if your URLs differ.
     function getPageType() {
         const path = window.location.pathname;
         // Check for subdirectories first
         if (path.includes('/FAQ/')) return 'faq';
         if (path.includes('/VERSIONS/')) return 'versions';
         if (path.includes('/KNOWN_ISSUES/')) return 'known_issues';
-        // Check for home page 
+        if (path.includes('/COMMUNITY/')) return 'community'; // Handle community page
+        if (path.includes('/CONTACT/')) return 'contact';   // Handle contact page
+        // Check for home page (at root or named index.html)
         if (path.endsWith('index.html') || path.endsWith('/') || path === '') return 'home';
         // Fallback if no match
         return 'home';
@@ -34,14 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     async function loadMarkdownContent(productId, pageType, container) {
         // Exit if the container element doesn't exist on the page
+        // (e.g., on community page which might not load markdown)
         if (!container) {
-            console.error(`Markdown container not found for product ${productId} on page ${pageType}`);
+            // console.log(`No markdown container found for product ${productId} on page ${pageType}. Skipping markdown load.`);
             return;
         }
 
         // Determine the correct base path for the content file
-        // If the current HTML page is at the root (like index.html), path is 'content/...'
-        // If the current HTML page is in a subdirectory (like FAQ/faq.html), path is '../content/...'
         const isRootPage = (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/'));
         const basePath = isRootPage ? '' : '../'; // Go up one level if not root
         const filePath = `${basePath}content/${productId}/${pageType}.md`;
@@ -50,12 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = '<p>Loading...</p>';
 
         try {
-            // Fetch the Markdown file content
-            const response = await fetch(filePath);
+            // Fetch the Markdown file content WITH cache control
+            // *** THIS IS THE UPDATED LINE ***
+            const response = await fetch(filePath, { cache: 'no-cache' });
 
             // Check if the fetch was successful
             if (!response.ok) {
-                // If file not found (404) or other error, display an error message
                 throw new Error(`HTTP error! status: ${response.status} loading ${filePath}`);
             }
 
@@ -100,7 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isMatch) {
                 // Find the specific container within this product section
                 const markdownContainer = contentDiv.querySelector('.markdown-container');
-                loadMarkdownContent(validProductId, currentPageType, markdownContainer);
+                // Load content only if the container exists
+                if (markdownContainer) {
+                    loadMarkdownContent(validProductId, currentPageType, markdownContainer);
+                }
             }
         });
 
@@ -149,7 +154,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Will visually default to DEFAULT_PRODUCT if localStorage fails
     }
 
-    // Call the switch function initially to display the correct product content
+    // Call the switch function initially only if product tabs exist on the page
+    // This prevents errors on pages without product switching (like maybe community)
+    if (productTabs.length > 0 && productContents.length > 0) {
     switchProductContent(initialProduct);
+    }
 
-}); // End of DOMContentLoaded
+}); 
