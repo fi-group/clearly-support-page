@@ -1,5 +1,4 @@
 ### How to ...?
 
-You can do ...
-
+You can do something like...
 ---
