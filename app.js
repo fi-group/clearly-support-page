@@ -1,17 +1,14 @@
 // Wait until the HTML document is fully loaded and parsed
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Product Configuration ---
     const PRODUCTS = ['3d', 'bim', 'hub', 'projects'];
-    const DEFAULT_PRODUCT = 'projects'; // Your default product
-
+    const DEFAULT_PRODUCT = 'projects'; 
+    
     // --- Get DOM Elements ---
-    // Adjusted selector to potentially find content divs within scrollable-area if that structure is used
     const productTabs = document.querySelectorAll('.product-tabs .tab-link');
     const productContents = document.querySelectorAll('.main-content .product-content, .scrollable-area .product-content');
     const pageContainer = document.querySelector('.page-container');
 
-    // --- Determine Current Page Type ---
     // Derives page type from URL path. Adjust if your URLs differ.
     function getPageType() {
         const path = window.location.pathname;
@@ -19,9 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (path.includes('/FAQ/')) return 'faq';
         if (path.includes('/VERSIONS/')) return 'versions';
         if (path.includes('/KNOWN_ISSUES/')) return 'known_issues';
-        if (path.includes('/COMMUNITY/')) return 'community'; // Handle community page
-        if (path.includes('/CONTACT/')) return 'contact';   // Handle contact page
-        // Check for home page (at root or named index.html)
+        if (path.includes('/COMMUNITY/')) return 'community'; 
+        if (path.includes('/CONTACT/')) return 'contact';  
+        // Check for home page
         if (path.endsWith('index.html') || path.endsWith('/') || path === '') return 'home';
         // Fallback if no match
         return 'home';
@@ -81,8 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Switches the visible product content section based on the selected product ID.
-     * Updates tab appearances, stores the selection, and triggers markdown loading.
-     * @param {string} selectedProductId - The product ID (e.g., '3d', 'bim').
      */
     function switchProductContent(selectedProductId) {
         // Ensure the selected product ID is valid, otherwise use the default
@@ -155,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Call the switch function initially only if product tabs exist on the page
-    // This prevents errors on pages without product switching (like maybe community)
+    // This prevents errors on pages without product switching
     if (productTabs.length > 0 && productContents.length > 0) {
     switchProductContent(initialProduct);
     }
