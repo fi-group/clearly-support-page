@@ -37,7 +37,7 @@ li {
 /* === Language Switcher Styling === */
 .language-switcher {
     position: absolute;
-    top: 20px;
+    top: 10px;
     right: 20px;
     z-index: 100; /* Ensure it's on top of other content */
     background-color: #f4f7f6; /* Match body background */
@@ -139,15 +139,30 @@ li {
     text-decoration: none;
 }
 
-.left-sidebar .main-nav h3 {
-    margin-bottom: 10px;
-    font-size: 1.1em;
-    color: #adb5bd;
-    margin-top: auto;
+/* Feedback Section pushed to bottom */
+.left-sidebar .main-nav .feedback-lang {
+    margin-top: auto; /* Pushes the entire feedback section down */
     padding-top: 20px;
     border-top: 1px solid #495057;
-    flex-shrink: 0;
 }
+
+.left-sidebar .main-nav .feedback-lang h3 {
+    margin-bottom: 10px; 
+    font-size: 1.1em; 
+    color: #adb5bd;
+}
+
+.left-sidebar .main-nav .feedback-lang p {
+    font-size: 0.9em; 
+    margin-bottom: 5px; 
+    color: #adb5bd;
+}
+
+.left-sidebar .main-nav .feedback-lang p a {
+    color: #58b4cc; 
+    font-weight: bold;
+}
+
 .left-sidebar .main-nav p {
     font-size: 0.9em;
     margin-bottom: 5px;
@@ -185,7 +200,7 @@ li {
     min-width: 0;
     height: 100vh;
     overflow-y: hidden; /* This prevents the main container from scrolling */
-    background-color: #fff;
+    /*background-color: #fff;*/
 }
 
 /* === Main Content Area === */
@@ -224,7 +239,7 @@ li {
     z-index: 10;
     background-color: #fff;
     padding: 10px 20px 0;
-    border-bottom: 2px solid #58b4cc;
+    border-bottom: 4px solid #58b4cc;
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
@@ -568,45 +583,99 @@ li {
     background-color: #272a2d;
 }
 
-.giscus-header {
-    color: #f8f9fa;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #dee2e6;
+/* ... VIDEO TEST... */
+
+/* New styles for the background video */
+#video-3d {
+    position: fixed;
+    width: 80%;
+    height: 80%;
+    /*Make it centered */
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: -1; /* Puts the video behind the content */
 }
 
-.community-intro {
-    font-size: 1.2em;
-    line-height: 1.6;
-    color: #58b4cc;
-    margin-bottom: 20px;
+#video-bim {
+    position: fixed;
+    width: 80%;
+    height: 80%;
+    /*Make it centered */
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: -1; /* Puts the video behind the content */
 }
 
-.community-intro2 {
-    font-size: 1em;
-    line-height: 1.6;
-    color: #c7ced6;
-    margin-bottom: 20px;
+#video-hub {
+    position: fixed;
+    width: 80%;
+    height: 80%;
+    /*Make it centered */
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: -1; /* Puts the video behind the content */
 }
 
-.community-image {
-    max-width: 10%;
-    height: auto;
-    display: block;
-    margin: 0 auto 20px auto;
-    border-radius: 5px;
-    overflow: hidden;
-    line-height: 0;
+#video-projects {
+    position: fixed;
+    width: 80%;
+    height: 80%;
+    /*Make it centered */
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: -1; /* Puts the video behind the content */
 }
 
-.community-intro3 {
-    font-size: 1em;
-    line-height: 1.6;
-    color: #b7bbbf;
-    margin-bottom: 20px;
-    text-align: center;
+.background-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+    display: none; /* Make sure videos are hidden by default */
 }
 
-.giscus-container {
+/*  Styles for the fake scrollbar spacer */
+.video-scrub-spacer {
+    /* This element will force the scrollbar to appear */
+    height: 150vh; 
+    visibility: hidden; /* Hide the element itself but keep its space */
+}
+
+/*  This makes the scrollbar thumb transparent on WebKit browsers */
+.scrollable-area::-webkit-scrollbar-thumb {
+    background-color: transparent;
+}
+
+/* Styles for the new scrolling content box */
+.scrollable-content {
+    background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white */
+    backdrop-filter: blur(5px); /* Optional blur effect for modern browsers */
+    width: 100%;
+    max-width: 800px;
+    margin: 50px auto;
     padding: 20px;
-    margin-top: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+/* Adjustments for the product-content section */
+.product-content[data-product="3d"] {
+    position: relative;
+    /* Removed the margin-top from here */
+}
+/* New style to add the margin only to the scrolling content box */
+.product-content[data-product="3d"] .scrollable-content {
+    margin-top: 50px;
 }

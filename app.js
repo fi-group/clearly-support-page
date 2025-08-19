@@ -2,29 +2,34 @@
 const LANGUAGES = ['en', 'nl'];
 const DEFAULT_LANGUAGE = 'en';
 
+// Variables for video scrubbing animation
+let currentVideoTime = 0;
+let targetVideoTime = 0;
+let isAnimating = false;
+let backgroundVideo = null;
+
+// Flag to prevent multiple content loads at once
+let isContentLoading = false;
+
 // Wait until the HTML document is fully loaded and parsed
 document.addEventListener('DOMContentLoaded', () => {
 
     const PRODUCTS = ['3d', 'bim', 'hub', 'projects'];
     const DEFAULT_PRODUCT = 'projects';
-
+    
     // --- Get DOM Elements ---
     const productTabs = document.querySelectorAll('.product-tabs .tab-link');
-    const productContents = document.querySelectorAll('.main-content .product-content, .scrollable-area .product-content');
+    const productContents = document.querySelectorAll('.main-content .product-content');
     const pageContainer = document.querySelector('.page-container');
-    // Get the new language links
     const langLinks = document.querySelectorAll('.lang-link');
+    const scrollableArea = document.querySelector('.scrollable-area');
 
-    // Derives page type from URL path. Adjust if your URLs differ.
     function getPageType() {
         const path = window.location.pathname;
-        // Check for subdirectories first
         if (path.includes('/FAQ/')) return 'faq';
         if (path.includes('/VERSIONS/')) return 'versions';
         if (path.includes('/CONTACT/')) return 'contact';
-        // Check for home page (at root or named index.html)
         if (path.endsWith('index.html') || path.endsWith('/') || path === '') return 'home';
-        // Fallback if no match
         return 'home';
     }
     const currentPageType = getPageType();
@@ -44,100 +49,159 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Sets the active class on the correct language link
+     */
+    function setActiveLanguageLink(lang) {
+        langLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.dataset.lang === lang) {
+                link.classList.add('active');
+            }
+        });
+    }
+
+    /**
      * Fetches Markdown content from a file, converts it to HTML,
      * and injects it into the specified container element.
      * @param {string} productId - The product ID (e.g., '3d').
      * @param {string} pageType - The page type (e.g., 'faq').
      * @param {HTMLElement} container - The DOM element to inject HTML into.
      */
-    async function loadMarkdownContent(productId, pageType, container) {
-        // Exit if the container element doesn't exist on the page
-        if (!container) {
+    async function fetchMarkdownContent(productId, pageType, container) {
+        if (!container || isContentLoading) {
             return;
         }
 
-        // Get the current language for the file path
+        isContentLoading = true;
         const currentLanguage = getCurrentLanguage();
-
-        // Determine the correct base path for the content file
         const isRootPage = (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/'));
-        const basePath = isRootPage ? '' : '../'; // Go up one level if not root
-        
-        // Use the current language in the file path
+        const basePath = isRootPage ? '' : '../';
         const filePath = `${basePath}content/${currentLanguage}/${productId}/${pageType}.md`;
 
-        // Display a loading message
         container.innerHTML = '<p>Loading...</p>';
 
         try {
-            // Fetch the Markdown file content WITH cache control
-            const response = await fetch(filePath, { cache: 'no-cache' });
+            const response = await fetch(filePath, {
+                cache: 'no-cache'
+            });
 
-            // Check if the fetch was successful
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status} loading ${filePath}`);
             }
 
-            // Get the text content of the file
             const markdownText = await response.text();
 
-            // Check if Marked.js library is loaded
             if (typeof marked === 'undefined') {
                 throw new Error("Marked.js library is not loaded. Please include it in your HTML.");
             }
 
-            // Convert Markdown text to HTML using Marked.js
             container.innerHTML = marked.parse(markdownText);
 
         } catch (error) {
-            // Display error message in the container if fetching/parsing fails
             console.error('Error loading or parsing Markdown content:', error);
             container.innerHTML = `<p style="color: red; font-weight: bold;">Error loading content.</p><p style="color: #666; font-size: 0.9em;">Could not load: ${filePath}<br/>${error.message}</p>`;
+        } finally {
+            isContentLoading = false;
         }
     }
 
     /**
-     * Switches the visible product content section based on the selected product ID.
+     * Toggles the visibility of homepage content based on the selected language.
+     * This function only runs for the index.html page.
+     * @param {string} lang - The language to display.
+     * @param {string} productId - The currently active product tab ID.
      */
-    function switchProductContent(selectedProductId) {
-        // Ensure the selected product ID is valid, otherwise use the default
+    function toggleHomePageContent(lang, productId) {
+        const productContentDiv = document.querySelector(`.product-content[data-product="${productId}"]`);
+        if (!productContentDiv) return;
+
+        const allContentDivs = productContentDiv.querySelectorAll('.home-content-lang');
+        allContentDivs.forEach(div => {
+            if (div.dataset.lang === lang) {
+                div.style.display = 'block';
+            } else {
+                div.style.display = 'none';
+            }
+        });
+    }
+
+    /**
+     * Toggles the visibility of hardcoded feedback content.
+     * @param {string} lang - The language to display.
+     */
+    function toggleFeedbackContent(lang) {
+        const feedbackDivs = document.querySelectorAll('.feedback-lang');
+        feedbackDivs.forEach(div => {
+            if (div.dataset.lang === lang) {
+                div.style.display = 'block';
+            } else {
+                div.style.display = 'none';
+            }
+        });
+    }
+
+    /**
+     * Switches the visible product content section.
+     * This is the universal function for all pages.
+     */
+    function loadContent(selectedProductId) {
+        if (isContentLoading) return;
+
         const validProductId = PRODUCTS.includes(selectedProductId) ? selectedProductId : DEFAULT_PRODUCT;
 
-        // 1. Update Tab Active State
+        // Always update the backgroundVideo reference when switching
+        backgroundVideo = document.querySelector(`.product-content[data-product="${validProductId}"] video`);
+
+        // Remove old scroll listener before re-adding
+        if (scrollableArea) {
+            scrollableArea.removeEventListener('scroll', animateVideoOnScroll);
+        }
+
         productTabs.forEach(tab => {
             tab.classList.toggle('active', tab.dataset.product === validProductId);
         });
 
-        // 2. Show the correct product content section and hide others
         productContents.forEach(contentDiv => {
             const isMatch = contentDiv.dataset.product === validProductId;
             contentDiv.style.display = isMatch ? 'block' : 'none';
 
-            // If this is the section being shown, load its Markdown content
             if (isMatch) {
-                // Find the specific container within this product section
-                const markdownContainer = contentDiv.querySelector('.markdown-container');
-                // Load content only if the container exists
-                if (markdownContainer) {
-                    loadMarkdownContent(validProductId, currentPageType, markdownContainer);
+                if (currentPageType === 'home') {
+                    const currentLanguage = getCurrentLanguage();
+                    toggleHomePageContent(currentLanguage, validProductId);
+
+                    // For 3D and Projects, attach scroll listener
+                    if ((validProductId === '3d' || validProductId === 'projects'|| validProductId === 'hub' || validProductId === 'bim') && scrollableArea) {
+                        scrollableArea.addEventListener('scroll', animateVideoOnScroll);
+
+                        // Spacer logic
+                        const scrollableContent = document.querySelector(`.product-content[data-product="${validProductId}"] .scrollable-content`);
+                        const scrollbarSpacer = document.querySelector('.video-scrub-spacer');
+                        if (scrollableContent && scrollbarSpacer) {
+                            if (scrollableContent.scrollHeight <= window.innerHeight) {
+                                scrollbarSpacer.style.height = '150vh';
+                            } else {
+                                scrollbarSpacer.style.height = '0';
+                            }
+                        }
+                    }
+                } else {
+                    const markdownContainer = contentDiv.querySelector('.markdown-container');
+                    if (markdownContainer) {
+                        fetchMarkdownContent(validProductId, currentPageType, markdownContainer);
+                    }
                 }
             }
         });
 
-        // 3. Store the valid selection in localStorage
         try {
             localStorage.setItem('selectedProduct', validProductId);
         } catch (e) {
             console.warn("LocalStorage not available. Product selection will not persist.", e);
         }
-
-        // 4. Optional: Add product-specific class to page container for styling hooks
-        if (pageContainer) {
-            PRODUCTS.forEach(prodId => pageContainer.classList.remove(`product-${prodId}`));
-            pageContainer.classList.add(`product-${validProductId}`);
-        }
     }
 
+    
     /**
      * Switches the language, saves the preference, and reloads the page.
      * @param {string} lang - The language to switch to ('en' or 'nl').
@@ -148,63 +212,91 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             console.warn("LocalStorage not available for saving language preference.", e);
         }
-        // Reload the page to apply the new language content
-        window.location.reload();
+        
+        setActiveLanguageLink(lang);
+        toggleFeedbackContent(lang);
+
+        if (currentPageType === 'home') {
+            loadContent(localStorage.getItem('selectedProduct'));
+        } else {
+            loadContent(localStorage.getItem('selectedProduct'));
+        }
     }
+    
+    /**
+     * Animates the video's playback based on the scroll position.
+     * Updates the target video time.
+     */
+    function animateVideoOnScroll() {
+        if (!backgroundVideo) return;
+        if (!scrollableArea) return;
 
+        const scrollHeight = scrollableArea.scrollHeight - scrollableArea.clientHeight;
+        const scrollPosition = scrollableArea.scrollTop;
+
+        if (backgroundVideo.duration && scrollHeight > 0) {
+            const duration = backgroundVideo.duration;
+            targetVideoTime = (scrollPosition / scrollHeight) * duration;
+        }
+
+        if (!isAnimating) {
+            updateVideoTime();
+        }
+    }
+    
+    /**
+     * Smoothly updates the video's current time towards the target time.
+     * Uses requestAnimationFrame for a smooth, non-jerky animation.
+     */
+    function updateVideoTime() {
+        isAnimating = true;
+        currentVideoTime += (targetVideoTime - currentVideoTime) * 0.1;
+        backgroundVideo.currentTime = Math.max(0, Math.min(backgroundVideo.duration, currentVideoTime));
+
+        if (Math.abs(targetVideoTime - currentVideoTime) > 0.01) {
+            window.requestAnimationFrame(updateVideoTime);
+        } else {
+            isAnimating = false;
+        }
+    }
+    
     // --- Event Listeners ---
-
-    // Add click event listeners to all product tabs
+    
     productTabs.forEach(tab => {
-        // Check if the tab has the data-product attribute
         if (tab.dataset.product) {
             tab.addEventListener('click', (event) => {
-                // When clicked, switch content to the product specified in data-product
-                switchProductContent(event.target.dataset.product);
+                loadContent(event.target.dataset.product);
             });
         }
     });
 
-    // Add click listeners to the language links
     langLinks.forEach(link => {
         if (link.dataset.lang) {
             link.addEventListener('click', (event) => {
-                event.preventDefault(); // Prevents the link from navigating
+                event.preventDefault();
                 const selectedLang = event.target.dataset.lang;
-                if (selectedLang !== getCurrentLanguage()) {
-                    switchLanguage(selectedLang);
-                }
+                switchLanguage(selectedLang);
             });
         }
     });
 
     // --- Initialization ---
 
-    // Determine the initial product to show when the page first loads
-    let initialProduct = DEFAULT_PRODUCT; // Start with the default
+    let initialProduct = DEFAULT_PRODUCT;
     try {
         const storedProduct = localStorage.getItem('selectedProduct');
-        // Use stored product if it's valid and exists in PRODUCTS list
         if (storedProduct && PRODUCTS.includes(storedProduct)) {
             initialProduct = storedProduct;
         } else {
-            // If no valid product stored, store the default one
             localStorage.setItem('selectedProduct', initialProduct);
         }
     } catch (e) {
         console.warn("LocalStorage not available for retrieving initial product.", e);
-        // Will visually default to DEFAULT_PRODUCT if localStorage fails
     }
-
-    // Set the initial active state for the language links
-    const currentLanguage = getCurrentLanguage();
-    langLinks.forEach(link => {
-        link.classList.toggle('active', link.dataset.lang === currentLanguage);
-    });
     
-    // Call the switch function initially only if product tabs exist on the page
-    // This prevents errors on pages without product switching
-    if (productTabs.length > 0 && productContents.length > 0) {
-        switchProductContent(initialProduct);
-    }
+    const currentLanguage = getCurrentLanguage();
+    setActiveLanguageLink(currentLanguage);
+    toggleFeedbackContent(currentLanguage);
+
+    loadContent(initialProduct);
 });
