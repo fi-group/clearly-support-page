@@ -1,4 +1,23 @@
-## 1.35.0 (Latest):
+## Version ? (Latest):
+
+### Release Notes:
+
+- **Integration:**
+    - You can now add only a specific sublayer of a WMS/WMTS service to a Digital Twin configuration.
+    - When a WMS/WMTS/WFS resource title matches a layer name, only that specific layer will be displayed, eliminating the need to select from a dropdown.
+    - Adding WMS/WMTS/WFS resources to a Digital Twin is now more streamlined when the resource title and layer name are an exact match.
+
+- **UI:**
+    - Updates to the consent text and an option to subscribe or unsubscribe from our development update newsletter have been added.
+    - GeoJSON files can now be previewed directly within Clearly.Hub.
+
+- **Technical:**
+    - A fix has been implemented to ensure better compatibility with a wider range of WMS services.
+    - Several issues related to incorrect Digital Twin configurations have been resolved.
+    - Critical NPM vulnerabilities and a SOLR error related to fetching datasets have been fixed.
+
+--- 
+## Version 1.35.0:
 
 ### Release Notes:
 
