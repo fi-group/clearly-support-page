@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check for subdirectories first
         if (path.includes('/FAQ/')) return 'faq';
         if (path.includes('/VERSIONS/')) return 'versions';
-        if (path.includes('/COMMUNITY/')) return 'community';
         if (path.includes('/CONTACT/')) return 'contact';
         // Check for home page (at root or named index.html)
         if (path.endsWith('index.html') || path.endsWith('/') || path === '') return 'home';
