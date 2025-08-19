@@ -1,13 +1,19 @@
+// Add constants for languages and a default language
+const LANGUAGES = ['en', 'nl'];
+const DEFAULT_LANGUAGE = 'en';
+
 // Wait until the HTML document is fully loaded and parsed
 document.addEventListener('DOMContentLoaded', () => {
 
     const PRODUCTS = ['3d', 'bim', 'hub', 'projects'];
-    const DEFAULT_PRODUCT = 'projects'; 
-    
+    const DEFAULT_PRODUCT = 'projects';
+
     // --- Get DOM Elements ---
     const productTabs = document.querySelectorAll('.product-tabs .tab-link');
     const productContents = document.querySelectorAll('.main-content .product-content, .scrollable-area .product-content');
     const pageContainer = document.querySelector('.page-container');
+    // Get the new language links
+    const langLinks = document.querySelectorAll('.lang-link');
 
     // Derives page type from URL path. Adjust if your URLs differ.
     function getPageType() {
@@ -15,14 +21,28 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check for subdirectories first
         if (path.includes('/FAQ/')) return 'faq';
         if (path.includes('/VERSIONS/')) return 'versions';
-        if (path.includes('/COMMUNITY/')) return 'community'; 
-        if (path.includes('/CONTACT/')) return 'contact';   
+        if (path.includes('/COMMUNITY/')) return 'community';
+        if (path.includes('/CONTACT/')) return 'contact';
         // Check for home page (at root or named index.html)
         if (path.endsWith('index.html') || path.endsWith('/') || path === '') return 'home';
         // Fallback if no match
         return 'home';
     }
     const currentPageType = getPageType();
+
+    /**
+     * Helper function to get the current language from localStorage.
+     * Returns the stored language, or the default if none is found.
+     */
+    function getCurrentLanguage() {
+        try {
+            const storedLang = localStorage.getItem('language');
+            return LANGUAGES.includes(storedLang) ? storedLang : DEFAULT_LANGUAGE;
+        } catch (e) {
+            console.warn("LocalStorage not available for retrieving language.", e);
+            return DEFAULT_LANGUAGE;
+        }
+    }
 
     /**
      * Fetches Markdown content from a file, converts it to HTML,
@@ -33,23 +53,25 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     async function loadMarkdownContent(productId, pageType, container) {
         // Exit if the container element doesn't exist on the page
-        // (e.g., on community page which might not load markdown)
         if (!container) {
-            // console.log(`No markdown container found for product ${productId} on page ${pageType}. Skipping markdown load.`);
             return;
         }
+
+        // Get the current language for the file path
+        const currentLanguage = getCurrentLanguage();
 
         // Determine the correct base path for the content file
         const isRootPage = (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/'));
         const basePath = isRootPage ? '' : '../'; // Go up one level if not root
-        const filePath = `${basePath}content/${productId}/${pageType}.md`;
+        
+        // Use the current language in the file path
+        const filePath = `${basePath}content/${currentLanguage}/${productId}/${pageType}.md`;
 
         // Display a loading message
         container.innerHTML = '<p>Loading...</p>';
 
         try {
             // Fetch the Markdown file content WITH cache control
-            // *** THIS IS THE UPDATED LINE ***
             const response = await fetch(filePath, { cache: 'no-cache' });
 
             // Check if the fetch was successful
@@ -117,6 +139,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Switches the language, saves the preference, and reloads the page.
+     * @param {string} lang - The language to switch to ('en' or 'nl').
+     */
+    function switchLanguage(lang) {
+        try {
+            localStorage.setItem('language', lang);
+        } catch (e) {
+            console.warn("LocalStorage not available for saving language preference.", e);
+        }
+        // Reload the page to apply the new language content
+        window.location.reload();
+    }
+
     // --- Event Listeners ---
 
     // Add click event listeners to all product tabs
@@ -126,6 +162,19 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.addEventListener('click', (event) => {
                 // When clicked, switch content to the product specified in data-product
                 switchProductContent(event.target.dataset.product);
+            });
+        }
+    });
+
+    // Add click listeners to the language links
+    langLinks.forEach(link => {
+        if (link.dataset.lang) {
+            link.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevents the link from navigating
+                const selectedLang = event.target.dataset.lang;
+                if (selectedLang !== getCurrentLanguage()) {
+                    switchLanguage(selectedLang);
+                }
             });
         }
     });
@@ -148,10 +197,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Will visually default to DEFAULT_PRODUCT if localStorage fails
     }
 
+    // Set the initial active state for the language links
+    const currentLanguage = getCurrentLanguage();
+    langLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.lang === currentLanguage);
+    });
+    
     // Call the switch function initially only if product tabs exist on the page
     // This prevents errors on pages without product switching
     if (productTabs.length > 0 && productContents.length > 0) {
-    switchProductContent(initialProduct);
+        switchProductContent(initialProduct);
     }
-
-}); 
+});

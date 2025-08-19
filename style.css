@@ -364,3 +364,38 @@ li {
     margin-top: 20px; /* Space above the comments section */
     }
 
+/* Language Switcher Styling */
+.language-switcher {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100; /* Ensure it's on top of other content */
+    background-color: #f4f7f6; /* Match body background */
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 0.9em;
+}
+
+.lang-link {
+    font-weight: bold;
+    color: #495057;
+    padding: 5px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.lang-link:hover {
+    color: #2596be;
+}
+
+.lang-link.active {
+    color: #2596be;
+}
+
+.lang-separator {
+    color: #495057;
+    margin: 0 5px;
+}
+
