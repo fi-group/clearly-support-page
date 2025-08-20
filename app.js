@@ -312,6 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentLanguage = getCurrentLanguage();
     setActiveLanguageLink(currentLanguage);
     toggleFeedbackContent(currentLanguage);
+    toggleContactContent(currentLanguage);
 
     loadContent(initialProduct);
 });
