@@ -266,9 +266,9 @@ li {
     background-color: #fff;
     border-color: #58b4cc #58b4cc #fff;
     color: #58b4cc;
-    border-top-width: 1px;
-    border-left-width: 1px;
-    border-right-width: 1px;
+    border-top-width: 2px;
+    border-left-width: 2px;
+    border-right-width: 2px;
 }
 
 .scrollable-area {

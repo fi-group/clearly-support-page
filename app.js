@@ -141,6 +141,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Toggles the visibility of hardcoded contact content.
+     */
+    function toggleContactContent(lang) {
+        const contactDivs = document.querySelectorAll('.contact-list');
+        contactDivs.forEach(div => {
+            if (div.dataset.lang === lang) {
+                div.style.display = 'block';
+            } else {
+                div.style.display = 'none';
+            }
+        });
+    }
+
+    /**
      * Switches the visible product content section.
      * This is the universal function for all pages.
      */
@@ -215,6 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         setActiveLanguageLink(lang);
         toggleFeedbackContent(lang);
+        toggleContactContent(lang);
 
         if (currentPageType === 'home') {
             loadContent(localStorage.getItem('selectedProduct'));
