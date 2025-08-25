@@ -36,6 +36,8 @@ The standard procedure for creating an account/joining a project is to be invite
 
 Once they have added you, you will automatically receive an email with an invitation link to create your Clearly account and set a password.
 
+---
+
 ### 6. I don't see the plus sign on the left bottom of the screen that allows to create items. Why? 
 
 The problem is likely that you have not yet been assigned to the process you are trying to create items with the role "Taakhouder" (Assignee). 
@@ -52,6 +54,8 @@ To help admins choose, here is a quick explanation of the two main roles in Clea
 
 Clearly also allows these roles to be reflected at the task level for more granular control. For example, you can make sure that someone can only create stakeholder items (as a "Taakhouder" in the first task of a process), and then be a viewer (as a "Belanghebbende") for the upcoming tasks in the same process.
 
+---
+
 ### 7. I have a new phone and would like to set up MFA. How do I get a new QR?
 
 To set up Multi-Factor Authentication (MFA) for your Clearly account on your new phone, you have to disable and re-enable the MFA from your account. Please follow these steps:
@@ -63,10 +67,13 @@ To set up Multi-Factor Authentication (MFA) for your Clearly account on your new
 - Open your Authenticator app on your new phone and scan this QR code.
 - Enter the 6-digit verification code from the authenticator app into Clearly to complete the process.
 
+---
+
 ### 8. The link sent by Clearly to create an account expired. What should I do?
 
 If the link sent by Clearly to create an account has expired, please **contact our support team** for further assistance.
 
+---
 
 ### 9. I don't see a process in the project that I know should be there. Why? 
 
@@ -74,6 +81,8 @@ The problem is likely that you have **not** yet been assigned to the the specifi
 
 The admins can use the the following URL (with the correct organization and project names) to see which members are assigned to which processes. The UI also shows the relevant process tasks with people that are assigned to those tasks in a standard way:
 https://clearly.app/org/{ORGANIZATION_NAME}/{PROJECT_NAME}/settings/processes
+
+---
 
 ### 10. I keep getting an email from Clearly as "*_You were mentioned in 0 comments and 0 tasks have been assigned to you._*" Why and how to stop getting these emails?
 
@@ -90,9 +99,13 @@ You can easily change these notification preferences on your account:
 for me."_*. You can switch this off.
     - Adjusting these settings will stop these particular emails.
 
+---
+
 ### 11. I don't remember my username for logging in. What should I do?
 
 Please **contact our support team** at *_support@futureinsight.nl_* for further assistance.
+
+---
 
 ### 12. I have question that is not listed here. What should I do?
 

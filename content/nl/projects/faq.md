@@ -36,6 +36,8 @@ De standaardprocedure voor het aanmaken van een account/lid worden van een proje
 
 Zodra zij u hebben toegevoegd, ontvangt u automatisch een e-mail met een uitnodigingslink om uw Clearly-account aan te maken en een wachtwoord in te stellen.
 
+---
+
 ### 6. Ik zie het plusteken niet linksonder op het scherm waarmee ik items kan aanmaken. Waarom?
 
 Het probleem is waarschijnlijk dat u nog niet bent toegewezen aan het proces waarin u items probeert aan te maken met de rol "Taakhouder".
@@ -52,6 +54,8 @@ Om beheerders te helpen bij hun keuze, volgt hier een korte uitleg van de twee b
 
 Clearly maakt het ook mogelijk om deze rollen op taakniveau te laten gelden voor meer granulaire controle. U kunt er bijvoorbeeld voor zorgen dat iemand alleen stakeholder-items kan aanmaken (als een "Taakhouder" in de eerste taak van een proces), en dan een kijker is (als een "Belanghebbende") voor de volgende taken in hetzelfde proces.
 
+---
+
 ### 7. Ik heb een nieuwe telefoon en wil MFA instellen. Hoe krijg ik een nieuwe QR-code?
 
 Om Multi-Factor Authenticatie (MFA) voor uw Clearly-account op uw nieuwe telefoon in te stellen, moet u de MFA uitschakelen en opnieuw inschakelen vanuit uw account. Volg de volgende stappen:
@@ -63,9 +67,13 @@ Om Multi-Factor Authenticatie (MFA) voor uw Clearly-account op uw nieuwe telefoo
 - Open uw Authenticator-app op uw nieuwe telefoon en scan deze QR-code.
 - Voer de 6-cijferige verificatiecode van de authenticator-app in Clearly in om het proces te voltooien.
 
+---
+
 ### 8. De link die Clearly heeft gestuurd om een account aan te maken is verlopen. Wat moet ik doen?
 
 Als de link die Clearly heeft gestuurd om een account aan te maken is verlopen, neem dan **contact op met ons supportteam** voor verdere assistentie.
+
+---
 
 ### 9. Ik zie een proces niet in het project dat er volgens mij wel zou moeten zijn. Waarom?
 
@@ -73,6 +81,8 @@ Het probleem is waarschijnlijk dat u **nog niet** bent toegewezen aan het specif
 
 De beheerders kunnen de volgende URL (met de juiste organisatie- en projectnamen) gebruiken om te zien welke leden aan welke processen zijn toegewezen. De gebruikersinterface toont ook de relevante procestaken met mensen die aan die taken zijn toegewezen op een standaardmanier:
 https://clearly.app/org/{ORGANIZATION_NAME}/{PROJECT_NAME}/settings/processes
+
+---
 
 ### 10. Ik krijg steeds een e-mail van Clearly met als onderwerp "*_U bent genoemd in 0 opmerkingen en er zijn 0 taken aan u toegewezen._*". Waarom en hoe kan ik stoppen met het ontvangen van deze e-mails?
 
@@ -88,9 +98,13 @@ U kunt deze meldingsvoorkeuren eenvoudig aanpassen in uw account:
     - De schakelaar voor *_"Ik wil ook dagelijks of wekelijks een e-mail ontvangen wanneer er geen updates voor mij zijn."_*. U kunt dit uitschakelen.
     - Door deze instellingen aan te passen, stopt u met het ontvangen van deze specifieke e-mails.
 
+---
+
 ### 11. Ik ben mijn gebruikersnaam vergeten om in te loggen. Wat moet ik doen?
 
 Neem alstublieft **contact op met ons supportteam** via *_support@futureinsight.nl_* voor verdere assistentie.
+
+---
 
 ### 12. Ik heb een vraag die hier niet wordt vermeld. Wat moet ik doen?
 
