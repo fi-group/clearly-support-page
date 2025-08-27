@@ -1,37 +1,37 @@
-## Versie 20.41.0 (Meest recent)
+## Versie 20.41.0 (Laatste)
 
-### Release Notes:
+### Release-opmerkingen:
 
 - **Integratie:**
-    * **Soepelere bulkbewerkingen:** We hebben verschillende problemen met de functie voor bulkbewerkingen opgelost. De waarschuwing "u heeft niet-opgeslagen wijzigingen" verschijnt niet langer onterecht nadat u wijzigingen heeft toegepast, en de pop-up "Wijzigingen toepassen" geeft nu nauwkeuriger aan wanneer alle updates zijn voltooid, waardoor onbedoelde deselecties worden voorkomen.
+    * **Verbeterde Bulk-bewerkingen:** Verschillende problemen met de bulkbewerkingsfunctie zijn opgelost. De waarschuwing "niet-opgeslagen wijzigingen" verschijnt niet langer onterecht na het toepassen van wijzigingen, en de pop-up "Wijzigingen toepassen" geeft nu nauwkeuriger weer wanneer alle updates zijn voltooid, waardoor per ongeluk deselecteren wordt voorkomen.
 
-- **UI:**
-    * **Verbeterde projectrelaties:** Wanneer u een item kopieert dat relaties heeft gedefinieerd in de metadata, worden die relaties niet langer overgenomen als de optie "relaties van bronitem overnemen" niet is geselecteerd. Dit geeft u meer controle over uw gekopieerde items.
-    * **Kleine tekstupdates:** De zin "sinds gisteravond" is gewijzigd in "sinds gistermorgen" voor betere nauwkeurigheid.
+- **Gebruikersinterface:**
+    * **Verbeterde projectrelaties:** Bij het kopiëren van een item met gedefinieerde relaties in de metadata, worden deze relaties niet langer overgenomen als de optie "relaties van bronitem overnemen" niet is geselecteerd. Dit biedt meer controle over gekopieerde items.
+    * **Kleine tekstupdates:** De zin "sinds gisterenavond" is aangepast naar "sinds gisterenmorgen" voor meer nauwkeurigheid.
 
-- **Technische Updates & Oplossingen:**
-    * **Vereenvoudigde configuratie van beveiligde lagen:** De configuratie voor beveiligde Esri-lagen wordt nu opgeslagen in de database in plaats van in een moeilijk te bewerken bestand. Dit maakt de configuratie eenvoudiger en elimineert de noodzaak om de applicatie opnieuw te laden na het aanbrengen van wijzigingen.
-    * **Correcte gebruikersverwijdering:** Wanneer u een gebruiker uit een project verwijdert, wordt deze nu correct verwijderd uit alle gerelateerde processen, wat voorkomt dat ze nieuwe taken krijgen toegewezen.
-    * **Ophalen van Bouwapp-projecten:** Het systeem haalt nu zowel gepubliceerde als ongepubliceerde Bouwapp-projecten op, zodat u projecten kunt voorbereiden en koppelen voordat ze live gaan.
+- **Technische updates & fixes:**
+    * **Vereenvoudigde configuratie van beschermde lagen:** Configuratie voor beschermde Esri-lagen wordt nu in de database opgeslagen in plaats van in een moeilijk te bewerken bestand. Dit vergemakkelijkt configuratie en elimineert de noodzaak om de applicatie opnieuw te laden na wijzigingen.
+    * **Correcte gebruikersverwijdering:** Verwijderde gebruikers worden nu correct uit alle gekoppelde processen verwijderd, waardoor zij geen nieuwe taken toegewezen krijgen.
+    * **Bouwapp-projecten ophalen:** Het systeem haalt nu zowel gepubliceerde als niet-gepubliceerde Bouwapp-projecten op, zodat projecten kunnen worden voorbereid en gekoppeld voordat ze live gaan.
 
 ---
 
 ## Versie 20.40.0
 
-### Release Notes:
+### Release-opmerkingen:
 
-- **UI:**
-    * **Hernoemde straalmeting:** De beschrijving voor de cirkelmeetfunctie is gewijzigd van "Meet oppervlakte" naar "Meet radius" voor de duidelijkheid.
+- **Gebruikersinterface:**
+    * **Heraanpassing radiusmeting:** De beschrijving van de cirkelmeettool is gewijzigd van "Oppervlakte meten" naar "Radius meten" voor meer duidelijkheid.
 
 ---
 
 ## Versie 20.39.0
 
-### Release Notes:
+### Release-opmerkingen:
 
 - **Integratie:**
-    * **Verbeterde statuscontrole:** De statuscontrole van het platform verifieert nu de databaseverbinding, wat een betrouwbaardere indicator is van of de applicatie volledig operationeel is.
-    * **Verbeterde alleen-lezen toegang:** We hebben de mogelijkheid voor gebruikers met alleen-lezen toegang om acties zoals het verwijderen van items uit te voeren, verwijderd, wat onbedoelde wijzigingen voorkomt en de beveiliging verbetert.
+    * **Verbeterde statuscontrole:** De statuscontrole van het platform verifieert nu de databaseverbinding, wat een betrouwbaarder indicatie geeft of de applicatie volledig operationeel is.
+    * **Verbeterde alleen-lezen toegang:** Gebruikers met alleen-lezen toegang kunnen nu geen acties uitvoeren zoals items verwijderen, waardoor onbedoelde wijzigingen worden voorkomen en de beveiliging wordt verbeterd.
 
-- **Technische Updates & Oplossingen:**
-    * **Oplossing voor Esri-laagtransparantie:** We hebben een probleem opgelost waarbij de transparantie van Esri-lagen verloren ging na het sluiten van het identificatievenster van een item. Uw transparantie-instellingen worden nu correct behouden.
+- **Technische updates & fixes:**
+    * **Fix transparantie Esri-lagen:** Een probleem waarbij transparantie van Esri-lagen verloren ging na het sluiten van het identificatievenster is opgelost. Transparantie-instellingen worden nu correct behouden.

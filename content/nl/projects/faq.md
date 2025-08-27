@@ -1,111 +1,108 @@
-### 1. Hoe kan ik mijn wachtwoord resetten?
+### 1. Hoe kan het wachtwoord worden gereset?
 
-U kunt uw wachtwoord resetten door naar de loginpagina te gaan [hier](https://clearly.app/login) en te klikken op 'Wachtwoord vergeten'. Vul uw e-mailadres in en klik op 'Herstellink versturen'.
+Het wachtwoord kan worden gereset via de [loginpagina](https://clearly.app/login) door te klikken op 'Wachtwoord vergeten'. E-mailadres invullen en 'Verstuur herstel-link' selecteren.
 
-Volg daarna de instructies in de e-mail die u ontvangt.
-
----
-
-### 2. Kan ik projectdata exporteren?
-
-Ja, gebruik de CSV 'export'-optie in het projectinstellingenmenu. Selecteer in de rechterbovenhoek de menuknop en kies 'export'.
-
-Dit toont u alle beschikbare projecten en hun processen waarvan u een export kunt maken.
+Vervolgens de instructies in de ontvangen e-mail volgen.
 
 ---
 
-### 3. Ik krijg een waarschuwing wanneer ik een item probeer te bewerken, zoals "Door deze waarde te bewerken, zal het proces teruggaan naar ...". Wat betekent dit?
+### 2. Kan projectdata worden geëxporteerd?
 
-Het bewerken van een waarde in een taak kan soms vereisen dat u teruggaat en de volgende stappen opnieuw uitvoert.
+Ja, gebruik de CSV 'export'-optie in het projectinstellingenmenu. Selecteer in de rechterbovenhoek de menuknop en kies 'exporteren'.
 
-Dit gebeurt omdat de nieuwe waarde de uitkomst van latere taken in de workflow kan beïnvloeden, dus het systeem vraagt u om die stappen opnieuw te bekijken en te voltooien om de nauwkeurigheid te waarborgen.
-
----
-
-### 4. Kaartitems bewegen onverwacht bij het zoomen, of de kaart verschijnt wit/leeg.
-
-Als u merkt dat items die op de kaart zijn geplot, van positie verschuiven wanneer u in- of uitzoomt, of als de kaartachtergrond wit wordt of niet correct laadt, is er waarschijnlijk een probleem met de verbinding met de onderliggende kaartservice.
-
-Om dit op te lossen, moet de configuratie van de kaartservice worden gecontroleerd. Neem alstublieft **contact op met ons supportteam** voor assistentie, en zij zullen helpen het verbindingsprobleem te diagnosticeren en op te lossen.
+Alle beschikbare projecten en bijbehorende processen worden weergegeven, zodat een export kan worden gemaakt.
 
 ---
 
-### 5. Ik wil lid worden van een project op Clearly, hoe doe ik dat?
+### 3. Er verschijnt een waarschuwing bij het bewerken van een item zoals "Door deze waarde te bewerken, gaat het proces terug naar ...". Wat betekent dit?
 
-De standaardprocedure voor het aanmaken van een account/lid worden van een project is om te worden uitgenodigd door de projectbeheerders van de hoofdaannemer, aangezien zij het gebruikersbeheer voor hun projecten direct beheren.
+Het bewerken van een waarde in een taak kan vereisen dat latere stappen opnieuw moeten worden uitgevoerd.
 
-Zodra zij u hebben toegevoegd, ontvangt u automatisch een e-mail met een uitnodigingslink om uw Clearly-account aan te maken en een wachtwoord in te stellen.
-
----
-
-### 6. Ik zie het plusteken niet linksonder op het scherm waarmee ik items kan aanmaken. Waarom?
-
-Het probleem is waarschijnlijk dat u nog niet bent toegewezen aan het proces waarin u items probeert aan te maken met de rol "Taakhouder".
-
-De eenvoudigste manier om rollen van leden te wijzigen is via de functionaliteit voor bulkbewerkingen in de projectinstellingen:
-https://clearly.app/org/{ORGANIZATION_NAME}/{PROJECT_NAME}/settings/bulk-edit
-
-Let op: alleen beheerders van het project kunnen naar de pagina met projectinstellingen. Op die pagina kunnen ze een gebruiker selecteren en het proces kiezen waaraan ze hem/haar willen toewijzen (bijv. Stakeholders Proces) en de juiste rol geven.
-
-Om beheerders te helpen bij hun keuze, volgt hier een korte uitleg van de twee belangrijkste rollen in Clearly:
-- **Taakhouder**: Deze rol kan items aanmaken, bewerken en verwijderen. Om een gebruiker in staat te stellen nieuwe items aan te maken (en de "+" (items aanmaken)-knop te zien), moet hij/zij een "Taakhouder" zijn in de eerste taak van dat proces (bijv. "1. Stakeholder aanmaken").
-
-- **Belanghebbende**: Deze rol heeft "alleen-lezen"-rechten. Ze kunnen items zien, maar niet aanmaken, bewerken of verwijderen. Daarom zullen ze de "+" (items aanmaken)-knop niet zien.
-
-Clearly maakt het ook mogelijk om deze rollen op taakniveau te laten gelden voor meer granulaire controle. U kunt er bijvoorbeeld voor zorgen dat iemand alleen stakeholder-items kan aanmaken (als een "Taakhouder" in de eerste taak van een proces), en dan een kijker is (als een "Belanghebbende") voor de volgende taken in hetzelfde proces.
+Dit komt omdat de nieuwe waarde de uitkomst van volgende taken in de workflow kan beïnvloeden, waardoor het systeem vraagt de stappen opnieuw te controleren en te voltooien voor nauwkeurigheid.
 
 ---
 
-### 7. Ik heb een nieuwe telefoon en wil MFA instellen. Hoe krijg ik een nieuwe QR-code?
+### 4. Kaartitems verplaatsen onverwacht bij in- of uitzoomen, of de kaart wordt wit/leeg weergegeven.
 
-Om Multi-Factor Authenticatie (MFA) voor uw Clearly-account op uw nieuwe telefoon in te stellen, moet u de MFA uitschakelen en opnieuw inschakelen vanuit uw account. Volg de volgende stappen:
+Wanneer items op de kaart verschuiven bij het in- of uitzoomen, of de kaartachtergrond wit of niet correct laadt, is er waarschijnlijk een probleem met de verbinding naar de onderliggende kaartservice.
 
-- Log in op uw Clearly-account op www.clearly.app met uw gebruikersnaam en wachtwoord.
-- Navigeer naar "mijn account" (rechtsboven) om de sectie "Multi Factor Authenticatie" te vinden.
-- Klik op "DEACTIVEREN" om uw huidige MFA-instelling uit te schakelen.
-- Klik vervolgens op "STEL MFA IN" om de installatie voor uw nieuwe apparaat te starten. Er verschijnt een nieuwe QR-code op uw scherm.
-- Open uw Authenticator-app op uw nieuwe telefoon en scan deze QR-code.
-- Voer de 6-cijferige verificatiecode van de authenticator-app in Clearly in om het proces te voltooien.
+Controle van de kaartserviceconfiguratie is vereist. **Support team** kan helpen met diagnose en oplossing van het verbindingsprobleem.
 
 ---
 
-### 8. De link die Clearly heeft gestuurd om een account aan te maken is verlopen. Wat moet ik doen?
+### 5. Hoe kan een project op Clearly worden bezocht/waar kan een account worden aangemaakt?
 
-Als de link die Clearly heeft gestuurd om een account aan te maken is verlopen, neem dan **contact op met ons supportteam** voor verdere assistentie.
+Een account aanmaken of deelnemen aan een project gebeurt via een uitnodiging van de projectbeheerders van de hoofdaannemer, aangezien zij gebruikersdirect toegang verlenen.
 
----
-
-### 9. Ik zie een proces niet in het project dat er volgens mij wel zou moeten zijn. Waarom?
-
-Het probleem is waarschijnlijk dat u **nog niet** bent toegewezen aan het specifieke proces in het project waarin u items probeert aan te maken. U kunt dit oplossen door een van de projectbeheerders te vragen u een rol in het proces toe te wijzen.
-
-De beheerders kunnen de volgende URL (met de juiste organisatie- en projectnamen) gebruiken om te zien welke leden aan welke processen zijn toegewezen. De gebruikersinterface toont ook de relevante procestaken met mensen die aan die taken zijn toegewezen op een standaardmanier:
-https://clearly.app/org/{ORGANIZATION_NAME}/{PROJECT_NAME}/settings/processes
+Na toevoeging wordt automatisch een e-mail met een uitnodigingslink gestuurd om een Clearly-account aan te maken en een wachtwoord in te stellen.
 
 ---
 
-### 10. Ik krijg steeds een e-mail van Clearly met als onderwerp "*_U bent genoemd in 0 opmerkingen en er zijn 0 taken aan u toegewezen._*". Waarom en hoe kan ik stoppen met het ontvangen van deze e-mails?
+### 6. Waarom verschijnt het plus-teken linksonder niet om items te creëren?
 
-De e-mails worden gegenereerd op basis van uw persoonlijke meldingsvoorkeuren in uw Clearly-profiel. Uw instellingen zijn momenteel geconfigureerd om:
-- U een wekelijkse e-mailsamenvatting te sturen over vermeldingen en nieuwe taken.
-- Deze e-mail te sturen, zelfs als er geen nieuwe updates voor u zijn (d.w.z. 0 vermeldingen en 0 taken).
+Waarschijnlijk is nog geen rol "Taakhouder" (Assignee) toegewezen in het proces waar items moeten worden aangemaakt.
 
-U kunt deze meldingsvoorkeuren eenvoudig aanpassen in uw account:
-- Log in op uw Clearly-account.
-- Ga naar uw profielinstellingen, te vinden onder "Mijn Account".
-- Zoek naar de sectie "Meldingen". U zult het volgende willen aanpassen:
-    - De optie *_"Stuur een e-mail wanneer ik word genoemd of een taak krijg toegewezen"_*. U kunt dit bijvoorbeeld wijzigen naar "Nooit".
-    - De schakelaar voor *_"Ik wil ook dagelijks of wekelijks een e-mail ontvangen wanneer er geen updates voor mij zijn."_*. U kunt dit uitschakelen.
-    - Door deze instellingen aan te passen, stopt u met het ontvangen van deze specifieke e-mails.
+Roltoewijzing kan worden beheerd via de bulk edit-pagina in projectinstellingen:  
+https://clearly.app/org/{ORGANIZATION_NAME}/{PROJECT_NAME}/settings/bulk-edit  
 
----
+Alleen projectadmins kunnen de projectinstellingen openen. Daar kan een gebruiker worden geselecteerd, een proces toegewezen, en de juiste rol gegeven.
 
-### 11. Ik ben mijn gebruikersnaam vergeten om in te loggen. Wat moet ik doen?
+Rol-uitleg:
+- **Taakhouder (Assignee):** Kan items creëren, bewerken en verwijderen. Alleen als eerste taak van het proces is toegewezen kan het "+"-teken gebruikt worden.
+- **Belanghebbende (Stakeholder):** Alleen-lezenrechten. Kan items bekijken, maar niet creëren, bewerken of verwijderen, daarom geen "+"-teken.
 
-Neem alstublieft **contact op met ons supportteam** via *_support@futureinsight.nl_* voor verdere assistentie.
+Deze rollen kunnen op taakniveau worden toegepast voor fijnmazige controle.
 
 ---
 
-### 12. Ik heb een vraag die hier niet wordt vermeld. Wat moet ik doen?
+### 7. Nieuwe telefoon en MFA instellen. Hoe een nieuwe QR verkrijgen?
 
-Neem alstublieft **contact op met ons supportteam** via *_support@futureinsight.nl_* voor verdere assistentie.
+Om Multi-Factor Authenticatie (MFA) in te stellen op een nieuwe telefoon:
+
+- Inloggen bij Clearly via www.clearly.app.
+- Ga naar "mijn account" en vervolgens "Multi Factor Authenticatie".
+- Klik op "DEACTIVEREN" om de huidige MFA uit te schakelen.
+- Klik op "STEL MFA IN" om MFA opnieuw te configureren. Een nieuwe QR-code verschijnt.
+- Scan de QR-code met de Authenticator-app op de nieuwe telefoon.
+- Voer de 6-cijferige verificatiecode in Clearly in om de setup te voltooien.
+
+---
+
+### 8. De account-aanmaaklink van Clearly is verlopen. Wat nu?
+
+**Support team** kan verder helpen bij een verlopen uitnodigingslink.
+
+---
+
+### 9. Een proces ontbreekt in het project, terwijl dit aanwezig zou moeten zijn. Waarom?
+
+Waarschijnlijk is nog geen rol toegewezen in het specifieke proces. Dit kan worden opgelost door een projectadmin de rol te laten toewijzen.
+
+Admins kunnen via:  
+https://clearly.app/org/{ORGANIZATION_NAME}/{PROJECT_NAME}/settings/processes  
+zien welke leden welke processen en taken hebben.
+
+---
+
+### 10. Er komen e-mails met "*_You were mentioned in 0 comments and 0 tasks have been assigned to you._*". Hoe te stoppen?
+
+Deze e-mails worden gestuurd op basis van persoonlijke notificatievoorkeuren in het profiel. Huidige instellingen sturen wekelijkse samenvattingen, zelfs bij 0 updates.
+
+Notificatievoorkeuren aanpassen via profielinstellingen ("My Account"):
+
+- "Stuur een e-mail wanneer ik genoemd word of een taak toegewezen krijg": kan bijvoorbeeld worden ingesteld op "Nooit".
+- "Ik wil ook een dagelijkse of wekelijkse e-mail ontvangen wanneer er geen updates voor mij zijn": kan worden uitgezet.
+
+Instellingen aanpassen stopt deze specifieke e-mails.
+
+---
+
+### 11. Gebruikersnaam voor inloggen vergeten. Wat te doen?
+
+**Support team** bereiken via *_support@futureinsight.nl_* voor assistentie.
+
+---
+
+### 12. Vraag staat niet in deze lijst. Wat te doen?
+
+**Support team** bereiken via *_support@futureinsight.nl_* voor assistentie.
