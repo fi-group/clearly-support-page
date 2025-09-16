@@ -1,3 +1,6 @@
+![images.jpg](/images/images.jpg)
+
+
 ### 1. How to reset my password?
 
 You can reset your password by going to the login page [here](https://clearly.app/login) and click on 'Forgot Password'. Fill in your email and click 'Send Recovery Link'.
@@ -112,3 +115,5 @@ Please **contact our support team** at *_support@futureinsight.nl_* for further 
 Please **contact our support team** at *_support@futureinsight.nl_* for further assistance.
 
 ![65c843_9504d4ee31094c44bf06e2dae42a3b66~mv2 (1).png](/images/65c843_9504d4ee31094c44bf06e2dae42a3b66~mv2 (1).png)
+
+![images.jpg](/images/images.jpg)
