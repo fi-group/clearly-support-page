@@ -73,9 +73,11 @@ async function exchangeCodeForTokens(code, verifier) {
             localStorage.setItem('idToken', data.id_token);
             showNotification("You are currently logged in with the Support account.", 'success');
         } else {
-            localStorage.clear();
-            sessionStorage.clear();
             showNotification("Only Future Insight admins can use 'Admin Login'.", 'error');
+            // Then, perform a full logout to clear the Cognito session.
+            setTimeout(() => {
+                handleLogout();
+            }, 1500); // 1.5 second delay 
         }
     } catch (e) {
         console.error('Token exchange error:', e);
