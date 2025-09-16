@@ -41,6 +41,7 @@ select, input[type="text"], input[type="password"], textarea {
     box-sizing: border-box;
 }
 button {
+    width: 100%; 
     padding: 10px; 
     margin-top: 5px; 
     font-size: 1em; 
@@ -48,12 +49,9 @@ button {
     background-color: #2596be; 
     color: white; 
     cursor: pointer; 
+    border: none; 
     text-align: center;
     display: block;
-    width: fit-content;
-    margin: 15px auto 0 auto;
-    padding: 10px 20px;
-    border-radius: 4px;
 }
 button:disabled { 
     background-color: #a0a0a0; 
@@ -141,14 +139,12 @@ button:disabled {
     max-width: 100%;
 }
 .editor-footer {
-    display: flex;
-    align-items: center;
-    padding-top: 10px;
-    justify-content: center; 
+    flex-shrink: 0;
+    padding-top: 15px;
 }
 .home-link {
-    width: fit-content;
-    margin: 15px auto 0 auto;
+    width: 100%;
+    margin: 15px 0 0 0;
     padding: 10px 20px;
     background-color: #6c757d;
     color: white;
@@ -166,8 +162,8 @@ button:disabled {
     font-size: 0.9em; 
     position: sticky; 
     top: 20px; 
-    max-height: 80vh; /* fixes height to viewport, scrolls if content exceeds */
-    overflow-y: auto;   /* adds vertical scrollbar */
+    max-height: 80vh;
+    overflow-y: auto;
 }
 .cheatsheet h4 { 
     margin-top: 0; 
@@ -180,8 +176,8 @@ button:disabled {
     border-radius: 3px; 
     font-family: monospace; 
 }
-#save-button { 
-    margin-top: 15px; 
+#save-button, #upload-image-button {
+    width: 100%;
 }
 </style>
 </head>
@@ -268,7 +264,6 @@ button:disabled {
             <p><strong>Latest Uploaded Image:</strong><br>
             <div id="latest-markdown" style="background:#e9ecef; padding:5px; border-radius:3px; font-family:monospace;">(No image uploaded yet)</div></p>
         </div>
-
     </div>
 </div>
 
@@ -367,36 +362,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
- async function uploadImage(fileName, fileContentBase64) {
-  statusMessage.style.display = "block";
-  statusMessage.textContent = "Uploading image...";
-  uploadButton.disabled = true;
-  try {
-    const filePath = `images/${fileName}`;
-    await octokit.rest.repos.createOrUpdateFileContents({
-      owner: GITHUB_OWNER,
-      repo: GITHUB_REPO,
-      path: filePath,
-      message: `feat: Add image ${fileName}`,
-      content: fileContentBase64,
-      branch: GITHUB_BRANCH,
-    });
+  async function uploadImage(fileName, fileContentBase64) {
+    statusMessage.style.display = "block";
+    statusMessage.textContent = "Uploading image...";
+    uploadButton.disabled = true;
+    try {
+      const filePath = `images/${fileName}`;
+      await octokit.rest.repos.createOrUpdateFileContents({
+        owner: GITHUB_OWNER,
+        repo: GITHUB_REPO,
+        path: filePath,
+        message: `feat: Add image ${fileName}`,
+        content: fileContentBase64,
+        branch: GITHUB_BRANCH,
+      });
 
-    // Only update the "Latest Uploaded Image" box, do NOT append to editor
-    const markdownText = `![${fileName}](https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/images/${fileName})`;
-    latestMarkdown.textContent = markdownText;
+      // Only update the "Latest Uploaded Image" box, do NOT append to editor
+      const markdownText = `![${fileName}](https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/images/${fileName})`;
+      latestMarkdown.textContent = markdownText;
 
-    statusMessage.textContent = "✅ Image uploaded successfully! Copy the Markdown from above.";
-    statusMessage.style.color = "green";
-  } catch (error) {
-    console.error(error);
-    statusMessage.textContent = `❌ Error uploading image: ${error.message}`;
-    statusMessage.style.color = "red";
-  } finally {
-    uploadButton.disabled = false;
+      statusMessage.textContent = "✅ Image uploaded successfully! Copy the Markdown from above.";
+      statusMessage.style.color = "green";
+    } catch (error) {
+      console.error(error);
+      statusMessage.textContent = `❌ Error uploading image: ${error.message}`;
+      statusMessage.style.color = "red";
+    } finally {
+      uploadButton.disabled = false;
+    }
   }
-}
-
 
   async function saveFile() {
     saveButton.disabled = true;
@@ -404,25 +398,51 @@ document.addEventListener("DOMContentLoaded", () => {
     statusMessage.textContent = "Saving...";
     const filePath = selector.value;
     try {
-      const { data: fileData } = await octokit.rest.repos.getContent({
+      let { data: fileData } = await octokit.rest.repos.getContent({
         owner: GITHUB_OWNER,
         repo: GITHUB_REPO,
         path: filePath,
         ref: GITHUB_BRANCH,
       });
+
       const contentEncoded = btoa(unescape(encodeURIComponent(editor.value)));
-      await octokit.rest.repos.createOrUpdateFileContents({
-        owner: GITHUB_OWNER,
-        repo: GITHUB_REPO,
-        path: filePath,
-        message: "Updated content from web editor",
-        content: contentEncoded,
-        sha: fileData.sha,
-        branch: GITHUB_BRANCH,
-      });
+
+      try {
+        await octokit.rest.repos.createOrUpdateFileContents({
+          owner: GITHUB_OWNER,
+          repo: GITHUB_REPO,
+          path: filePath,
+          message: "Updated content from web editor",
+          content: contentEncoded,
+          sha: fileData.sha,
+          branch: GITHUB_BRANCH,
+        });
+      } catch (err) {
+        if (err.status === 409) { // SHA mismatch
+          const { data: latestData } = await octokit.rest.repos.getContent({
+            owner: GITHUB_OWNER,
+            repo: GITHUB_REPO,
+            path: filePath,
+            ref: GITHUB_BRANCH,
+          });
+          await octokit.rest.repos.createOrUpdateFileContents({
+            owner: GITHUB_OWNER,
+            repo: GITHUB_REPO,
+            path: filePath,
+            message: "Updated content from web editor",
+            content: contentEncoded,
+            sha: latestData.sha,
+            branch: GITHUB_BRANCH,
+          });
+        } else {
+          throw err;
+        }
+      }
+
       statusMessage.textContent = "✅ File saved successfully!";
       statusMessage.style.color = "green";
-      setTimeout(() => loadFile(selector.value), 1000);
+      setTimeout(() => loadFile(filePath), 1000);
+
     } catch (error) {
       console.error(error);
       statusMessage.textContent = `❌ Error saving file: ${error.message}`;
