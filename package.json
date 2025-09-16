@@ -1,0 +1,15 @@
+{
+  "name": "supportpage",
+  "version": "1.0.0",
+  "description": "This repository contains the source code for the Clearly Support website. It's a static website designed to provide support documentation (FAQs and Versions) for various Clearly products:",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@octokit/rest": "^22.0.0"
+  }
+}
