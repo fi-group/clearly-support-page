@@ -43,6 +43,7 @@
             font-family: monospace;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
@@ -73,6 +74,12 @@
 
                 <label for="editor-content">File Content (Markdown):</label>
                 <textarea id="editor-content" placeholder="Loading file content..."></textarea>
+
+                <label for="editor-content">File Content (Markdown):</label>
+                <textarea id="editor-content" placeholder="Loading file content..."></textarea>
+
+                <label for="preview-content">Live Preview:</label>
+                <div id="preview-content"></div>
 
                 <input type="hidden" id="commit-message" value="Updated content from web editor">
 
@@ -115,6 +122,14 @@
         if (!idToken) return false;
         const decodedToken = decodeJwt(idToken);
         return decodedToken && decodedToken.email === ADMIN_EMAIL;
+
+        const previewArea = document.getElementById('preview-content');
+
+        function updatePreview() {
+            const markdownText = editor.value;
+            const htmlContent = marked.parse(markdownText);
+            previewArea.innerHTML = htmlContent;
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -139,6 +154,7 @@
                     if (!response.ok) throw new Error(`File not found or private repo: ${response.statusText}`);
                     const content = await response.text();
                     editor.value = content;
+                    updatePreview();
                 } catch(error) {
                     editor.value = `Error loading file: ${error.message}`;
                 }
@@ -175,6 +191,7 @@
                 }
             }
             
+            editor.addEventListener('input', updatePreview);
             selector.addEventListener('change', () => loadFile(selector.value));
             saveButton.addEventListener('click', saveFile);
             loadFile(selector.value);
