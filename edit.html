@@ -228,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
         branch: GITHUB_BRANCH
       });
 
-      const markdownText = `![${fileName}](/${filePath})`;
+      const markdownText = `![${fileName}](https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/images/${fileName})`;
       editor.value += `\n${markdownText}\n`;
       updatePreview();
 
