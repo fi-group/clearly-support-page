@@ -299,98 +299,117 @@ function isUserAdmin() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const editorContainer = document.getElementById("editor-container");
-  const tokenOverlay = document.getElementById("token-overlay");
-  const patInput = document.getElementById("pat-input");
-  const patSubmit = document.getElementById("pat-submit");
-  const selector = document.getElementById("file-selector");
-  const editor = document.getElementById("editor-content");
-  const saveButton = document.getElementById("save-button");
-  const statusMessage = document.getElementById("status-message");
-  const previewArea = document.getElementById("preview-content");
-  const uploadButton = document.getElementById("upload-image-button");
-  const imageUploader = document.getElementById("image-uploader");
-  const latestMarkdown = document.getElementById("latest-markdown");
+    const editorContainer = document.getElementById("editor-container");
+    const tokenOverlay = document.getElementById("token-overlay");
+    const patInput = document.getElementById("pat-input");
+    const patSubmit = document.getElementById("pat-submit");
+    const selector = document.getElementById("file-selector");
+    const editor = document.getElementById("editor-content");
+    const saveButton = document.getElementById("save-button");
+    const statusMessage = document.getElementById("status-message");
+    const previewArea = document.getElementById("preview-content");
+    const uploadButton = document.getElementById("upload-image-button");
+    const imageUploader = document.getElementById("image-uploader");
+    const latestMarkdown = document.getElementById("latest-markdown");
 
-  function unlockEditor() {
-    tokenOverlay.style.display = "none";
-    editorContainer.style.display = "block";
-    document.getElementById("access-denied").style.display = "none";
-    loadFile(selector.value);
-  }
-
-  function handleTokenSubmit() {
-    const pat = patInput.value.trim();
-    if (pat && pat.startsWith("ghp_")) {
-      sessionStorage.setItem("github_pat", pat);
-      octokit = new Octokit({ auth: pat });
-      unlockEditor();
-    } else {
-      alert("Please enter a valid GitHub Personal Access Token.");
+    function unlockEditor() {
+        tokenOverlay.style.display = "none";
+        editorContainer.style.display = "block";
+        document.getElementById("access-denied").style.display = "none";
+        loadFile(selector.value);
     }
-  }
 
-  patSubmit.addEventListener("click", handleTokenSubmit);
+    function handleTokenSubmit() {
+        const pat = patInput.value.trim();
+        if (pat && pat.startsWith("ghp_")) {
+            sessionStorage.setItem("github_pat", pat);
+            octokit = new Octokit({ auth: pat });
+            unlockEditor();
+        } else {
+            alert("Please enter a valid GitHub Personal Access Token.");
+        }
+    }
 
-  const storedPat = sessionStorage.getItem("github_pat");
-  if (storedPat) {
-    octokit = new Octokit({ auth: storedPat });
-    unlockEditor();
-  } else {
-    tokenOverlay.style.display = "flex";
-  }
+    patSubmit.addEventListener("click", handleTokenSubmit);
 
-  function updatePreview() {
-    previewArea.innerHTML = marked.parse(editor.value);
-  }
+    const storedPat = sessionStorage.getItem("github_pat");
+    if (storedPat) {
+        octokit = new Octokit({ auth: storedPat });
+        unlockEditor();
+    } else {
+        tokenOverlay.style.display = "flex";
+    }
 
-  async function loadFile(filePath) {
+    function updatePreview() {
+        previewArea.innerHTML = marked.parse(editor.value);
+    }
+
+    async function loadFile(filePath) {
     editor.value = "Loading...";
     statusMessage.style.display = "none";
     try {
-      const { data } = await octokit.rest.repos.getContent({
+        const { data } = await octokit.rest.repos.getContent({
         owner: GITHUB_OWNER,
         repo: GITHUB_REPO,
         path: filePath,
         ref: GITHUB_BRANCH,
-      });
-      editor.value = atob(data.content);
-      updatePreview();
+        });
+        editor.value = atob(data.content);
+        updatePreview();
     } catch (error) {
-      editor.value = `Error loading file: ${error.message}`;
-      console.error(error);
+        editor.value = `Error loading file: ${error.message}`;
+        console.error(error);
     }
-  }
-
-  async function uploadImage(fileName, fileContentBase64) {
-    statusMessage.style.display = "block";
-    statusMessage.textContent = "Uploading image...";
-    uploadButton.disabled = true;
-    try {
-      const filePath = `images/${fileName}`;
-      await octokit.rest.repos.createOrUpdateFileContents({
-        owner: GITHUB_OWNER,
-        repo: GITHUB_REPO,
-        path: filePath,
-        message: `feat: Add image ${fileName}`,
-        content: fileContentBase64,
-        branch: GITHUB_BRANCH,
-      });
-
-      // Only update the "Latest Uploaded Image" box, do NOT append to editor
-      const markdownText = `![${fileName}](https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/images/${fileName})`;
-      latestMarkdown.textContent = markdownText;
-
-      statusMessage.textContent = "✅ Image uploaded successfully! Copy the Markdown from above.";
-      statusMessage.style.color = "green";
-    } catch (error) {
-      console.error(error);
-      statusMessage.textContent = `❌ Error uploading image: ${error.message}`;
-      statusMessage.style.color = "red";
-    } finally {
-      uploadButton.disabled = false;
     }
+
+    async function uploadImage(fileName, fileContentBase64) {
+        statusMessage.style.display = "block";
+        statusMessage.textContent = "Uploading image...";
+        uploadButton.disabled = true;
+
+        try {
+            const filePath = `images/${fileName}`;
+            let sha;
+
+            // Check if file exists to get its SHA
+            try {
+            const { data } = await octokit.rest.repos.getContent({
+                owner: GITHUB_OWNER,
+                repo: GITHUB_REPO,
+                path: filePath,
+                ref: GITHUB_BRANCH,
+            });
+            sha = data.sha; // file exists, set SHA
+            } catch (err) {
+            if (err.status !== 404) throw err; // if error is not "file not found", throw
+            sha = undefined; // new file, no SHA needed
+            }
+
+            await octokit.rest.repos.createOrUpdateFileContents({
+            owner: GITHUB_OWNER,
+            repo: GITHUB_REPO,
+            path: filePath,
+            message: `feat: Add image ${fileName}`,
+            content: fileContentBase64,
+            sha, // include only if file exists
+            branch: GITHUB_BRANCH,
+        });
+
+    const markdownText = `![${fileName}](https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/images/${fileName})`;
+    latestMarkdown.textContent = markdownText;
+
+    statusMessage.textContent = "✅ Image uploaded successfully! Copy the Markdown from above.";
+    statusMessage.style.color = "green";
+
+  } catch (error) {
+    console.error(error);
+    statusMessage.textContent = `❌ Error uploading image: ${error.message}`;
+    statusMessage.style.color = "red";
+  } finally {
+    uploadButton.disabled = false;
   }
+}
+
 
   async function saveFile() {
     saveButton.disabled = true;
