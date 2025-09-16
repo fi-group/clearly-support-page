@@ -1,6 +1,3 @@
-![images.jpg](/images/images.jpg)
-
-
 ### 1. How to reset my password?
 
 You can reset your password by going to the login page [here](https://clearly.app/login) and click on 'Forgot Password'. Fill in your email and click 'Send Recovery Link'.
