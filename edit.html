@@ -4,113 +4,230 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Content Editor</title>
-<link rel="stylesheet" href="style.css"> 
+<link rel="stylesheet" href="style.css">
 
-<script type="module" src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <style>
-  /* --- General Page & Container Styles --- */
-  body { padding: 20px; font-family: sans-serif; background-color: #f4f7f6; }
-  #editor-container, #token-modal-container { max-width: 90vw; margin: auto; }
-  #editor-container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-  label { font-weight: bold; margin-top: 15px; display: block; }
-  select, input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin-bottom: 15px; margin-top: 5px; font-size: 1em; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-  button { width: 100%; padding: 10px; margin-top: 5px; font-size: 1em; border-radius: 4px; background-color: #2596be; color: white; cursor: pointer; border: none; text-align: center; display: block; }
-  button:disabled { background-color: #a0a0a0; }
-  #status-message { font-weight: bold; padding: 10px; border-radius: 4px; display: none; margin: 0; }
-  .editor-footer { flex-shrink: 0; padding-top: 15px; }
-  .home-link { width: fit-content; margin: 15px auto 0 auto; padding: 10px 20px; background-color: #6c757d; color: white; border-radius: 4px; text-decoration: none; display: block; text-align: center; }
-
-  /* --- Token Modal Styles --- */
-  #token-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 3000; }
-  #token-modal { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 90%; max-width: 500px; }
-  #token-modal h3 { margin-top: 0; }
-  #token-modal button { width: 100%; padding: 10px; margin-top: 15px; background: #28a745; }
-
-  /* --- Main Layout Styles --- */
-  .editor-grid { display: grid; grid-template-columns: 3fr 1fr; gap: 25px; align-items: start; }
-  .main-editor { display: flex; flex-direction: column; height: calc(100vh - 100px); }
-  .editor-preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; flex-grow: 1; min-height: 0; }
-  .editor-pane, .preview-pane { display: flex; flex-direction: column; min-height: 0; }
-  #editor-content, #preview-content { flex-grow: 1; min-height: 0; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-top: 5px; font-family: monospace; font-size: 14px; }
-  #preview-content { background-color: #fafafa; font-family: sans-serif; }
-  #preview-content h1, #preview-content h2, #preview-content h3 { border-bottom: 1px solid #eee; padding-bottom: 5px; }
-
-  /* --- Cheatsheet & Save Button --- */
-  .cheatsheet { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 15px; font-size: 0.9em; position: sticky; top: 20px; }
-  .cheatsheet h4 { margin-top: 0; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
-  .cheatsheet code { background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
-  #save-button { margin-top: 15px; }
-
-  #latest-image-box { margin-top: 10px; font-family: monospace; }
+/* --- General Page & Container Styles --- */
+body { 
+    padding: 20px; 
+    font-family: sans-serif; 
+    background-color: #f4f7f6; 
+}
+#editor-container, #token-modal-container { 
+    max-width: 90vw; 
+    margin: auto; 
+}
+#editor-container { 
+    background-color: #fff; 
+    padding: 20px; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+}
+label { 
+    font-weight: bold; 
+    margin-top: 15px; 
+    display: block; 
+}
+select, input[type="text"], input[type="password"], textarea { 
+    width: 100%; 
+    padding: 10px; 
+    margin-bottom: 15px; 
+    margin-top: 5px; 
+    font-size: 1em; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    box-sizing: border-box;
+}
+button {
+    width: 100%; 
+    padding: 10px; 
+    margin-top: 5px; 
+    font-size: 1em; 
+    border-radius: 4px; 
+    background-color: #2596be; 
+    color: white; 
+    cursor: pointer; 
+    border: none; 
+    text-align: center;
+    display: block;
+}
+button:disabled { 
+    background-color: #a0a0a0; 
+}
+#status-message { 
+    font-weight: bold; 
+    padding: 10px; 
+    border-radius: 4px; 
+    display: none;
+    margin: 0; 
+}
+#latest-markdown {
+    padding: 10px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    margin-top: 5px;
+    font-family: monospace;
+    word-break: break-all;
+}
+/* Token modal */
+#token-overlay { 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background-color: rgba(0,0,0,0.5); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 3000; 
+}
+#token-modal { 
+    background: white; 
+    padding: 30px; 
+    border-radius: 8px; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+    width: 90%; 
+    max-width: 500px; 
+}
+#token-modal h3 { margin-top: 0; }
+#token-modal button { 
+    width: 100%; 
+    padding: 10px; 
+    margin-top: 15px; 
+    background: #28a745; 
+}
+/* Layout */
+.editor-grid { 
+    display: grid; 
+    grid-template-columns: 3fr 1fr; 
+    gap: 25px; 
+    align-items: start; 
+}
+.main-editor { 
+    display: flex; 
+    flex-direction: column; 
+    height: calc(100vh - 100px); 
+}
+.editor-preview-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+    flex-grow: 1; 
+    min-height: 0; 
+}
+.editor-pane, .preview-pane { 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 0; 
+}
+#editor-content, #preview-content { 
+    flex-grow: 1; 
+    min-height: 0; 
+    overflow-y: auto; 
+    border: 1px solid #ccc; 
+    padding: 10px; 
+    margin-top: 5px; 
+    font-family: monospace; 
+    font-size: 14px; 
+}
+#preview-content { 
+    background-color: #fafafa; 
+    font-family: sans-serif; 
+}
+#preview-content img {
+    max-width: 100%;
+}
+.editor-footer {
+    flex-shrink: 0;
+    padding-top: 15px;
+}
+.home-link {
+    width: fit-content;
+    margin: 15px auto 0 auto;
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+}
+/* Cheatsheet & Save */
+.cheatsheet { 
+    background-color: #f8f9fa; 
+    border: 1px solid #dee2e6; 
+    border-radius: 4px; 
+    padding: 15px; 
+    font-size: 0.9em; 
+    position: sticky; 
+    top: 20px; 
+}
+.cheatsheet h4 { 
+    margin-top: 0; 
+    border-bottom: 1px solid #ccc; 
+    padding-bottom: 8px; 
+}
+.cheatsheet code { 
+    background-color: #e9ecef; 
+    padding: 2px 5px; 
+    border-radius: 3px; 
+    font-family: monospace; 
+}
+#save-button { 
+    margin-top: 15px; 
+}
 </style>
 </head>
 <body>
 
 <div id="token-overlay" style="display: none;">
-  <div id="token-modal">
-    <h3>GitHub Access Token Required</h3>
-    <p>Please enter your GitHub Personal Access Token with `repo` scope to continue.</p>
-    <input type="password" id="pat-input" placeholder="Paste your token (ghp_...)" form="none">
-    <button id="pat-submit">Unlock Editor</button>
-  </div>
+    <div id="token-modal">
+        <h3>GitHub Access Token Required</h3>
+        <p>Please enter your GitHub Personal Access Token with <code>repo</code> scope to continue.</p>
+        <input type="password" id="pat-input" placeholder="Paste your token (ghp_...)" form="none">
+        <button id="pat-submit">Unlock Editor</button>
+    </div>
 </div>
 
 <div id="editor-container" style="display: none;">
-  <h2>Page Content Editor</h2>
-  <div class="editor-grid">
-    <div class="main-editor">
-      <div>
-        <label for="file-selector">Choose a file to edit:</label>
-        <select id="file-selector">
-          <option value="content/en/projects/faq.md">Projects - FAQ (English)</option>
-          <option value="content/nl/projects/faq.md">Projects - FAQ (Dutch)</option>
-          <option value="content/en/projects/versions.md">Projects - Versions (English)</option>
-          <option value="content/nl/projects/versions.md">Projects - Versions (Dutch)</option>
-          <option value="content/en/bim/faq.md">BIM - FAQ (English)</option>
-          <option value="content/nl/bim/faq.md">BIM - FAQ (Dutch)</option>
-          <option value="content/en/bim/versions.md">BIM - Versions (English)</option>
-          <option value="content/nl/bim/versions.md">BIM - Versions (Dutch)</option>
-          <option value="content/en/hub/faq.md">Hub - FAQ (English)</option>
-          <option value="content/nl/hub/faq.md">Hub - FAQ (Dutch)</option>
-          <option value="content/en/hub/versions.md">Hub - Versions (English)</option>
-          <option value="content/nl/hub/versions.md">Hub - Versions (Dutch)</option>
-          <option value="content/en/3d/faq.md">3D - FAQ (English)</option>
-          <option value="content/nl/3d/faq.md">3D - FAQ (Dutch)</option>
-          <option value="content/en/3d/versions.md">3D - Versions (English)</option>
-          <option value="content/nl/3d/versions.md">3D - Versions (Dutch)</option>
-        </select>
-      </div>
-      <div class="editor-preview-grid">
-        <div class="editor-pane">
-          <button type="button" id="upload-image-button">Upload Image</button>
-          <input type="file" id="image-uploader" accept="image/*" style="display: none;">
-          <div id="latest-image-box">Latest uploaded image: <span id="latest-markdown"></span></div>
-          <label for="editor-content">File Content (Markdown):</label>
-          <textarea id="editor-content" placeholder="Loading file content..."></textarea>
+    <h2>Page Content Editor</h2>
+    <div class="editor-grid">
+        <div class="main-editor">
+            <div>
+                <label for="file-selector">Choose a file to edit:</label>
+                <select id="file-selector">
+                    <option value="content/en/projects/faq.md">Projects - FAQ (English)</option>
+                    <option value="content/nl/projects/faq.md">Projects - FAQ (Dutch)</option>
+                </select>
+            </div>
+            <div class="editor-preview-grid">
+                <div class="editor-pane">
+                    <button type="button" id="upload-image-button">Upload Image</button>
+                    <input type="file" id="image-uploader" accept="image/*" style="display: none;">
+                    <div>Latest Uploaded Image:</div>
+                    <div id="latest-markdown">None</div>
+                    <label for="editor-content">File Content (Markdown):</label>
+                    <textarea id="editor-content" placeholder="Loading file content..."></textarea>
+                </div>
+                <div class="preview-pane">
+                    <label for="preview-content">Live Preview:</label>
+                    <div id="preview-content" class="markdown-container"></div>
+                </div>
+            </div>
+            <div class="editor-footer">
+                <div id="status-message"></div>
+                <a class="home-link" href="index.html">← Back to Home Page</a>
+            </div>
         </div>
-        <div class="preview-pane">
-          <label for="preview-content">Live Preview:</label>
-          <div id="preview-content" class="markdown-container"></div>
+        <div class="cheatsheet">
+            <h4>Markdown Cheatsheet</h4>
+            <p><strong>Headers:</strong><br><code># H1</code><br><code>## H2</code></p>
+            <p><strong>Emphasis:</strong><br><code>*italic*</code> or <code>_italic_</code></p>
+            <p><strong>Lists:</strong><br><code>- Item 1</code><br><code>- Item 2</code></p>
+            <button id="save-button">Save Changes</button>
         </div>
-      </div>
-      <div class="editor-footer">
-        <div id="status-message"></div>
-        <a class="home-link" href="index.html">← Back to Home Page</a>
-      </div>
     </div>
-    <div class="cheatsheet">
-      <h4>Markdown Cheatsheet</h4>
-      <p><strong>Headers:</strong><br><code># H1</code><br><code>## H2</code><br><code>### H3</code></p>
-      <p><strong>Emphasis:</strong><br><code>*italic*</code> or <code>_italic_</code><br><code>**bold**</code> or <code>__bold__</code></p>
-      <p><strong>Lists:</strong><br><code>- Item 1</code><br><code>- Item 2</code></p>
-      <p><code>1. Item 1</code><br><code>2. Item 2</code></p>
-      <p><strong>Link:</strong><br><code>[Link text](https://example.com)</code></p>
-      <p><strong>Image:</strong><br><code>![alt text](/images/your-image.png)</code></p>
-      <p><strong>Line Break:</strong><br><code>---</code></p>
-      <button id="save-button">Save Changes</button>
-    </div>
-  </div>
 </div>
 
 <p id="access-denied">Access Denied. Please <a href="index.html">log in</a> as an administrator to use this page.</p>
@@ -131,15 +248,10 @@ function decodeJwt(token) {
     const base64Url = token.split(".")[1];
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
+      atob(base64).split("").map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)).join("")
     );
     return JSON.parse(jsonPayload);
-  } catch (e) {
-    return null;
-  }
+  } catch (e) { return null; }
 }
 
 function isUserAdmin() {
@@ -203,7 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
         owner: GITHUB_OWNER,
         repo: GITHUB_REPO,
         path: filePath,
-        ref: GITHUB_BRANCH
+        ref: GITHUB_BRANCH,
       });
       editor.value = atob(data.content);
       updatePreview();
@@ -225,16 +337,12 @@ document.addEventListener("DOMContentLoaded", () => {
         path: filePath,
         message: `feat: Add image ${fileName}`,
         content: fileContentBase64,
-        branch: GITHUB_BRANCH
+        branch: GITHUB_BRANCH,
       });
-
       const markdownText = `![${fileName}](https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/images/${fileName})`;
       editor.value += `\n${markdownText}\n`;
       updatePreview();
-
-      // Update latest uploaded image box
       latestMarkdown.textContent = markdownText;
-
       statusMessage.textContent = "✅ Image uploaded successfully!";
       statusMessage.style.color = "green";
     } catch (error) {
@@ -256,7 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
         owner: GITHUB_OWNER,
         repo: GITHUB_REPO,
         path: filePath,
-        ref: GITHUB_BRANCH
+        ref: GITHUB_BRANCH,
       });
       const contentEncoded = btoa(unescape(encodeURIComponent(editor.value)));
       await octokit.rest.repos.createOrUpdateFileContents({
@@ -266,7 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
         message: "Updated content from web editor",
         content: contentEncoded,
         sha: fileData.sha,
-        branch: GITHUB_BRANCH
+        branch: GITHUB_BRANCH,
       });
       statusMessage.textContent = "✅ File saved successfully!";
       statusMessage.style.color = "green";
@@ -285,14 +393,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const file = event.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (e) =>
-      uploadImage(file.name, e.target.result.split(",")[1]);
+    reader.onload = (e) => uploadImage(file.name, e.target.result.split(",")[1]);
     reader.readAsDataURL(file);
     event.target.value = "";
   });
 
   editor.addEventListener("paste", (event) => {
-    const items = event.clipboardData || event.originalEvent.clipboardData.items;
+    const items = event.clipboardData?.items || event.originalEvent.clipboardData?.items;
     for (const item of items) {
       if (item.kind === "file" && item.type.startsWith("image/")) {
         event.preventDefault();
