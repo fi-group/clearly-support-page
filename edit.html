@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Content Editor</title>
     <link rel="stylesheet" href="style.css"> 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* Simple styles for the editor page */
         body { padding: 20px; font-family: sans-serif; background-color: #f4f7f6; }
@@ -20,8 +21,8 @@
         /* New styles for the grid layout and cheatsheet */
         .editor-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr; /* Creates two columns, editor takes 2/3 space */
-            gap: 25px; /* Space between the columns */
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
             align-items: start;
         }
         .cheatsheet {
@@ -42,8 +43,23 @@
             border-radius: 3px;
             font-family: monospace;
         }
+
+        /* Styles for the preview area */
+        #preview-content {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px 20px;
+            margin-top: 5px;
+            min-height: 100px;
+            background-color: #fafafa;
+        }
+        #preview-content h1,
+        #preview-content h2,
+        #preview-content h3 {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
@@ -74,10 +90,6 @@
 
                 <label for="editor-content">File Content (Markdown):</label>
                 <textarea id="editor-content" placeholder="Loading file content..."></textarea>
-
-                <label for="editor-content">File Content (Markdown):</label>
-                <textarea id="editor-content" placeholder="Loading file content..."></textarea>
-
                 <label for="preview-content">Live Preview:</label>
                 <div id="preview-content"></div>
 
@@ -122,14 +134,6 @@
         if (!idToken) return false;
         const decodedToken = decodeJwt(idToken);
         return decodedToken && decodedToken.email === ADMIN_EMAIL;
-
-        const previewArea = document.getElementById('preview-content');
-
-        function updatePreview() {
-            const markdownText = editor.value;
-            const htmlContent = marked.parse(markdownText);
-            previewArea.innerHTML = htmlContent;
-        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -143,8 +147,16 @@
             const commitInput = document.getElementById('commit-message');
             const saveButton = document.getElementById('save-button');
             const statusMessage = document.getElementById('status-message');
+            const previewArea = document.getElementById('preview-content'); // Get preview element
             const GITHUB_REPO_PATH = 'fi-group/clearly-support-page/main';
             const FUNCTION_URL = 'https://clearlysupportpage.netlify.app/.netlify/functions/save';
+            
+            // MOVED updatePreview function to the correct scope
+            function updatePreview() {
+                const markdownText = editor.value;
+                const htmlContent = marked.parse(markdownText);
+                previewArea.innerHTML = htmlContent;
+            }
 
             async function loadFile(filePath) {
                 editor.value = 'Loading...';
@@ -154,7 +166,7 @@
                     if (!response.ok) throw new Error(`File not found or private repo: ${response.statusText}`);
                     const content = await response.text();
                     editor.value = content;
-                    updatePreview();
+                    updatePreview(); // Generate initial preview
                 } catch(error) {
                     editor.value = `Error loading file: ${error.message}`;
                 }
@@ -191,9 +203,12 @@
                 }
             }
             
+            // Add event listener for live preview
             editor.addEventListener('input', updatePreview);
             selector.addEventListener('change', () => loadFile(selector.value));
             saveButton.addEventListener('click', saveFile);
+            
+            // Load the first file and generate its preview when the page is ready
             loadFile(selector.value);
         }
     });
