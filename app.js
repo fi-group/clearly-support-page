@@ -2,7 +2,7 @@
 // --- Part 1: Global Constants & Variables ---
 
 const CLIENT_ID = "2ptu70q0dmba7o1ustv95h4tsf";
-const REDIRECT_URI = "https://support.clearly.app"; // CHNAGE WITH PROD
+const REDIRECT_URI = "https://support.clearly.app";
 const ADMIN_EMAIL = "support@futureinsight.nl";
 
 const COGNITO_USER_POOL_DOMAIN = "auth.clearly.app";
@@ -77,7 +77,7 @@ async function exchangeCodeForTokens(code, verifier) {
             // Then, perform a full logout to clear the Cognito session.
             setTimeout(() => {
                 handleLogout();
-            }, 1500); // 1.5 second delay 
+            }, 500); // 0.5 second delay
         }
     } catch (e) {
         console.error('Token exchange error:', e);
