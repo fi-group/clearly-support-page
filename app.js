@@ -55,6 +55,7 @@ async function initiateLogin() {
     const verifier = generateRandomString(128);
     sessionStorage.setItem('pkce_code_verifier', verifier);
     const challenge = await generateCodeChallenge(verifier);
+    // NEW URL with &prompt=login
     const url = `https://${COGNITO_USER_POOL_DOMAIN}/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=openid+profile+email&code_challenge=${challenge}&code_challenge_method=S256&prompt=login`;
     window.location.href = url;
 }
