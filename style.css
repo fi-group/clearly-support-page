@@ -679,3 +679,62 @@ li {
 .product-content[data-product="3d"] .scrollable-content {
     margin-top: 50px;
 }
+
+.user-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+    background-color: #f4f7f6;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.login-logout {
+    background: none; border: none; cursor: pointer; color: #2596be; font-size: 1em;
+}
+
+/* --- Notification Pop-up Styles --- */
+#notification-popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 2000;
+    font-size: 1em;
+    color: white;
+    display: flex;
+    align-items: center;
+    transition: top 0.5s ease-in-out;
+}
+
+#notification-popup.hidden {
+    top: -100px; /* Hides it off-screen */
+}
+
+/* Style for success messages (green) */
+#notification-popup.success {
+    background-color: #28a745;
+}
+
+/* Style for error messages (red) */
+#notification-popup.error {
+    background-color: #dc3545;
+}
+
+#notification-message {
+    margin-right: 20px;
+}
+
+#notification-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+    line-height: 1;
+}

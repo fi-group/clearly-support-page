@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Editor</title>
+    <link rel="stylesheet" href="style.css"> 
+    <style>
+        /* Simple styles for the editor page */
+        body { padding: 20px; font-family: sans-serif; background-color: #f4f7f6; }
+        #editor-container { max-width: 900px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        #editor-content { width: 100%; height: 50vh; font-family: monospace; border: 1px solid #ccc; padding: 10px; font-size: 14px; margin-top: 5px; }
+        label { font-weight: bold; margin-top: 15px; display: block; }
+        select, input, button { width: 100%; padding: 10px; margin-bottom: 15px; margin-top: 5px; font-size: 1em; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #2596be; color: white; cursor: pointer; border: none; }
+        button:disabled { background-color: #a0a0a0; }
+        #status-message { margin-top: 10px; font-weight: bold; padding: 10px; border-radius: 4px; display: none; }
+        .home-link { display: block; text-align: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="editor-container" style="display: none;">
+        <h2>Simple Content Editor</h2>
+        
+        <label for="file-selector">Choose a file to edit:</label>
+        <select id="file-selector">
+            <option value="content/en/projects/faq.md">Projects - FAQ (English)</option>
+            <option value="content/en/projects/versions.md">Projects - Versions (English)</option>
+            <option value="content/nl/projects/faq.md">Projects - FAQ (Dutch)</option>
+            <option value="content/en/bim/faq.md">BIM - FAQ (English)</option>
+            </select>
+
+        <label for="editor-content">File Content (Markdown):</label>
+        <textarea id="editor-content" placeholder="Loading file content..."></textarea>
+
+        <label for="commit-message">Describe your change (commit message):</label>
+        <input type="text" id="commit-message" value="Updated content from web editor">
+
+        <button id="save-button">Save Changes</button>
+
+        <div id="status-message"></div>
+        <a class="home-link" href="index.html">← Back to Home Page</a>
+    </div>
+
+    <p id="access-denied">Access Denied. Please <a href="index.html">log in</a> as an administrator to use this page.</p>
+    
+<script>
+    // --- Security Check & Editor Logic ---
+    const ADMIN_EMAIL = "support@futureinsight.nl"; // Make sure this matches app.js
+
+    function decodeJwt(token) {
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+            return JSON.parse(jsonPayload);
+        } catch (e) { return null; }
+    }
+
+    function isUserAdmin() {
+        const idToken = localStorage.getItem('idToken');
+        if (!idToken) return false;
+        const decodedToken = decodeJwt(idToken);
+        return decodedToken && decodedToken.email === ADMIN_EMAIL;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (isUserAdmin()) {
+            document.getElementById('editor-container').style.display = 'block';
+            document.getElementById('access-denied').style.display = 'none';
+
+            // --- Editor Logic ---
+            const selector = document.getElementById('file-selector');
+            const editor = document.getElementById('editor-content');
+            const commitInput = document.getElementById('commit-message');
+            const saveButton = document.getElementById('save-button');
+            const statusMessage = document.getElementById('status-message');
+            const GITHUB_REPO_PATH = 'fi-group/clearly-support-page/main';
+            const FUNCTION_URL = 'https://clearlysupportpage.netlify.app/.netlify/functions/save';
+            async function loadFile(filePath) {
+                editor.value = 'Loading...';
+                statusMessage.style.display = 'none';
+                try {
+                    const response = await fetch(`https://raw.githubusercontent.com/${GITHUB_REPO_PATH}/${filePath}?t=` + new Date().getTime());
+                    if (!response.ok) throw new Error(`File not found or private repo: ${response.statusText}`);
+                    const content = await response.text();
+                    editor.value = content;
+                } catch(error) {
+                    editor.value = `Error loading file: ${error.message}`;
+                }
+            }
+
+            async function saveFile() {
+                saveButton.disabled = true;
+                statusMessage.style.display = 'block';
+                statusMessage.textContent = 'Saving...';
+                
+                try {
+                    const response = await fetch(FUNCTION_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            filePath: selector.value,
+                            newContent: editor.value,
+                            commitMessage: commitInput.value || 'Updated content from web editor'
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${await response.text()}`);
+                    }
+
+                    statusMessage.textContent = '✅ File saved successfully!';
+                    statusMessage.style.color = 'green';
+                    setTimeout(() => loadFile(selector.value), 1000); // Reload file after 1s
+                } catch (error) {
+                    console.error(error);
+                    statusMessage.textContent = `❌ Error saving file: ${error.message}`;
+                    statusMessage.style.color = 'red';
+                } finally {
+                    saveButton.disabled = false;
+                }
+            }
+            
+            selector.addEventListener('change', () => loadFile(selector.value));
+            saveButton.addEventListener('click', saveFile);
+            loadFile(selector.value);
+        }
+    });
+</script>
+</body>
+</html>
