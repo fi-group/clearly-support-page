@@ -7,9 +7,15 @@
     <link rel="stylesheet" href="style.css"> 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* Simple styles for the editor page */
         body { padding: 20px; font-family: sans-serif; background-color: #f4f7f6; }
-        #editor-container { max-width: 1200px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        #editor-container { 
+            max-width: 90vw; 
+            margin: auto; 
+            background-color: #fff; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
         #editor-content { width: 100%; height: 60vh; font-family: monospace; border: 1px solid #ccc; padding: 10px; font-size: 14px; margin-top: 5px; }
         label { font-weight: bold; margin-top: 15px; display: block; }
         select, input, button { width: 100%; padding: 10px; margin-bottom: 15px; margin-top: 5px; font-size: 1em; border: 1px solid #ccc; border-radius: 4px; }
@@ -18,7 +24,6 @@
         #status-message { margin-top: 10px; font-weight: bold; padding: 10px; border-radius: 4px; display: none; }
         .home-link { display: block; text-align: center; margin-top: 20px; }
 
-        /* New styles for the grid layout and cheatsheet */
         .editor-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -31,11 +36,27 @@
             border-radius: 4px;
             padding: 15px;
             font-size: 0.9em;
+            position: sticky;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+        }
+        #save-button {
+            margin-top: auto;
+        }
+        .scrollable-content {
+            overflow-y: auto;
+            max-height: 85vh;
         }
         .cheatsheet h4 {
             margin-top: 0;
             border-bottom: 1px solid #ccc;
             padding-bottom: 8px;
+            flex-shrink: 0; /* Prevents shrinking */
+        }
+        .cheatsheet p {
+            flex-shrink: 0; /* Prevents shrinking */
         }
         .cheatsheet code {
             background-color: #e9ecef;
@@ -44,7 +65,6 @@
             font-family: monospace;
         }
 
-        /* Styles for the preview area */
         #preview-content {
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -53,9 +73,7 @@
             min-height: 100px;
             background-color: #fafafa;
         }
-        #preview-content h1,
-        #preview-content h2,
-        #preview-content h3 {
+        #preview-content h1, #preview-content h2, #preview-content h3 {
             border-bottom: 1px solid #eee;
             padding-bottom: 5px;
         }
@@ -68,37 +86,38 @@
         
         <div class="editor-grid">
             <div class="main-editor">
-                <label for="file-selector">Choose a file to edit:</label>
-                <select id="file-selector">
-                    <option value="content/en/projects/faq.md">Projects - FAQ (English)</option>
-                    <option value="content/nl/projects/faq.md">Projects - FAQ (Dutch)</option>
-                    <option value="content/nl/projects/versions.md">Projects - Versions (Dutch)</option>
-                    <option value="content/en/projects/versions.md">Projects - Versions (English)</option>
-                    <option value="content/en/bim/faq.md">BIM - FAQ (English)</option>
-                    <option value="content/nl/bim/faq.md">BIM - FAQ (Dutch)</option>
-                    <option value="content/en/bim/versions.md">BIM - Versions (English)</option>
-                    <option value="content/nl/bim/versions.md">BIM - Versions (Dutch)</option>
-                    <option value="content/en/hub/faq.md">Hub - FAQ (English)</option>
-                    <option value="content/nl/hub/faq.md">Hub - FAQ (Dutch)</option>
-                    <option value="content/en/hub/versions.md">Hub - Versions (English)</option>
-                    <option value="content/nl/hub/versions.md">Hub - Versions (Dutch)</option>
-                    <option value="content/en/3d/faq.md">3D - FAQ (English)</option>
-                    <option value="content/nl/3d/faq.md">3D - FAQ (Dutch)</option>
-                    <option value="content/en/3d/versions.md">3D - Versions (English)</option>
-                    <option value="content/nl/3d/versions.md">3D - Versions (Dutch)</option>
-                </select>
+                <div class="scrollable-content">
+                    <label for="file-selector">Choose a file to edit:</label>
+                    <select id="file-selector">
+                        <option value="content/en/projects/faq.md">Projects - FAQ (English)</option>
+                        <option value="content/nl/projects/faq.md">Projects - FAQ (Dutch)</option>
+                        <option value="content/nl/projects/versions.md">Projects - Versions (Dutch)</option>
+                        <option value="content/en/projects/versions.md">Projects - Versions (English)</option>
+                        <option value="content/en/bim/faq.md">BIM - FAQ (English)</option>
+                        <option value="content/nl/bim/faq.md">BIM - FAQ (Dutch)</option>
+                        <option value="content/en/bim/versions.md">BIM - Versions (English)</option>
+                        <option value="content/nl/bim/versions.md">BIM - Versions (Dutch)</option>
+                        <option value="content/en/hub/faq.md">Hub - FAQ (English)</option>
+                        <option value="content/nl/hub/faq.md">Hub - FAQ (Dutch)</option>
+                        <option value="content/en/hub/versions.md">Hub - Versions (English)</option>
+                        <option value="content/nl/hub/versions.md">Hub - Versions (Dutch)</option>
+                        <option value="content/en/3d/faq.md">3D - FAQ (English)</option>
+                        <option value="content/nl/3d/faq.md">3D - FAQ (Dutch)</option>
+                        <option value="content/en/3d/versions.md">3D - Versions (English)</option>
+                        <option value="content/nl/3d/versions.md">3D - Versions (Dutch)</option>
+                    </select>
 
-                <label for="editor-content">File Content (Markdown):</label>
-                <textarea id="editor-content" placeholder="Loading file content..."></textarea>
-                <label for="preview-content">Live Preview:</label>
-                <div id="preview-content"></div>
+                    <label for="editor-content">File Content (Markdown):</label>
+                    <textarea id="editor-content" placeholder="Loading file content..."></textarea>
 
-                <input type="hidden" id="commit-message" value="Updated content from web editor">
+                    <label for="preview-content">Live Preview:</label>
+                    <div id="preview-content"></div>
 
-                <button id="save-button">Save Changes</button>
+                    <input type="hidden" id="commit-message" value="Updated content from web editor">
 
-                <div id="status-message"></div>
-                <a class="home-link" href="index.html">← Back to Home Page</a>
+                    <div id="status-message"></div>
+                    <a class="home-link" href="index.html">← Back to Home Page</a>
+                </div>
             </div>
 
             <div class="cheatsheet">
@@ -110,6 +129,8 @@
                 <p><strong>Link:</strong><br><code>[Link text](https://example.com)</code></p>
                 <p><strong>Image:</strong><br><code>![alt text](/images/your-image.png)</code></p>
                 <p><strong>Line Break:</strong><br><code>---</code></p>
+                
+                <button id="save-button">Save Changes</button>
             </div>
         </div>
     </div>
@@ -117,7 +138,6 @@
     <p id="access-denied">Access Denied. Please <a href="index.html">log in</a> as an administrator to use this page.</p>
     
 <script>
-    // --- Security Check & Editor Logic ---
     const ADMIN_EMAIL = "support@futureinsight.nl"; 
     
     function decodeJwt(token) {
@@ -141,17 +161,15 @@
             document.getElementById('editor-container').style.display = 'block';
             document.getElementById('access-denied').style.display = 'none';
 
-            // --- Editor Logic ---
             const selector = document.getElementById('file-selector');
             const editor = document.getElementById('editor-content');
             const commitInput = document.getElementById('commit-message');
             const saveButton = document.getElementById('save-button');
             const statusMessage = document.getElementById('status-message');
-            const previewArea = document.getElementById('preview-content'); // Get preview element
+            const previewArea = document.getElementById('preview-content');
             const GITHUB_REPO_PATH = 'fi-group/clearly-support-page/main';
             const FUNCTION_URL = 'https://clearlysupportpage.netlify.app/.netlify/functions/save';
             
-            // MOVED updatePreview function to the correct scope
             function updatePreview() {
                 const markdownText = editor.value;
                 const htmlContent = marked.parse(markdownText);
@@ -166,7 +184,7 @@
                     if (!response.ok) throw new Error(`File not found or private repo: ${response.statusText}`);
                     const content = await response.text();
                     editor.value = content;
-                    updatePreview(); // Generate initial preview
+                    updatePreview();
                 } catch(error) {
                     editor.value = `Error loading file: ${error.message}`;
                 }
@@ -193,7 +211,7 @@
 
                     statusMessage.textContent = '✅ File saved successfully!';
                     statusMessage.style.color = 'green';
-                    setTimeout(() => loadFile(selector.value), 1000); // Reload file after 1s
+                    setTimeout(() => loadFile(selector.value), 1000);
                 } catch (error) {
                     console.error(error);
                     statusMessage.textContent = `❌ Error saving file: ${error.message}`;
@@ -203,12 +221,10 @@
                 }
             }
             
-            // Add event listener for live preview
             editor.addEventListener('input', updatePreview);
             selector.addEventListener('change', () => loadFile(selector.value));
             saveButton.addEventListener('click', saveFile);
             
-            // Load the first file and generate its preview when the page is ready
             loadFile(selector.value);
         }
     });
