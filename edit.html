@@ -41,8 +41,6 @@ select, input[type="text"], input[type="password"], textarea {
     box-sizing: border-box;
 }
 button {
-    width: fit-content;
-    width: 100%; 
     padding: 10px; 
     margin-top: 5px; 
     font-size: 1em; 
@@ -50,9 +48,12 @@ button {
     background-color: #2596be; 
     color: white; 
     cursor: pointer; 
-    border: none; 
     text-align: center;
     display: block;
+    width: fit-content;
+    margin: 15px auto 0 auto;
+    padding: 10px 20px;
+    border-radius: 4px;
 }
 button:disabled { 
     background-color: #a0a0a0; 
@@ -140,8 +141,10 @@ button:disabled {
     max-width: 100%;
 }
 .editor-footer {
-    flex-shrink: 0;
-    padding-top: 15px;
+    display: flex;
+    align-items: center;
+    padding-top: 10px;
+    justify-content: center; 
 }
 .home-link {
     width: fit-content;
@@ -163,6 +166,8 @@ button:disabled {
     font-size: 0.9em; 
     position: sticky; 
     top: 20px; 
+    max-height: 80vh; /* fixes height to viewport, scrolls if content exceeds */
+    overflow-y: auto;   /* adds vertical scrollbar */
 }
 .cheatsheet h4 { 
     margin-top: 0; 
@@ -218,8 +223,8 @@ button:disabled {
             </div>
             <div class="editor-footer">
                 <div id="status-message"></div>
-                <a class="home-link" href="index.html">← Back to Home Page</a>
                 <button type="button" id="save-button">Save Changes</button>
+                <a class="home-link" href="index.html">← Back to Home Page</a>
             </div>
         </div>
 
