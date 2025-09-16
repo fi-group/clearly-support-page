@@ -218,15 +218,51 @@ button:disabled {
             <div class="editor-footer">
                 <div id="status-message"></div>
                 <a class="home-link" href="index.html">← Back to Home Page</a>
+                <button type="button" id="save-button">Save Changes</button>
             </div>
         </div>
+
         <div class="cheatsheet">
             <h4>Markdown Cheatsheet</h4>
-            <p><strong>Headers:</strong><br><code># H1</code><br><code>## H2</code></p>
-            <p><strong>Emphasis:</strong><br><code>*italic*</code> or <code>_italic_</code></p>
-            <p><strong>Lists:</strong><br><code>- Item 1</code><br><code>- Item 2</code></p>
-            <button id="save-button">Save Changes</button>
+            <p><strong>Headers:</strong><br>
+            <code># H1</code><br>
+            <code>## H2</code><br>
+            <code>### H3</code></p>
+            <p><strong>Emphasis:</strong><br>
+            <code>*italic*</code> or <code>_italic_</code><br>
+            <code>**bold**</code> or <code>__bold__</code><br>
+            <code>~~strikethrough~~</code></p>
+            <p><strong>Lists:</strong><br>
+            <strong>Bulleted:</strong><br>
+            <code>- Item 1</code><br>
+            <code>- Item 2</code><br>
+            <strong>Numbered:</strong><br>
+            <code>1. Item 1</code><br>
+            <code>2. Item 2</code></p>
+            <p><strong>Nested Lists:</strong><br>
+            <code>- Item 1<br>&nbsp;&nbsp;- Subitem 1<br>- Item 2</code></p>
+            <p><strong>Links:</strong><br>
+            <code>[Link text](https://example.com)</code></p>
+            <p><strong>Images:</strong><br>
+            <code>![Alt text](image-url)</code><br>
+            <em>Optional size/center using HTML:</em><br>
+            <code>&lt;img src="image-url" alt="Alt text" width="300" style="display:block; margin:auto;"&gt;</code></p>
+            <p><strong>Blockquotes:</strong><br>
+            <code>> This is a quote</code></p>
+            <p><strong>Inline code:</strong><br>
+            <code>`inline code`</code></p>
+            <p><strong>Code blocks:</strong><br>
+            <code>```<br>function test() {<br>  console.log("Hello");<br>}<br>```</code></p>
+            <p><strong>Horizontal Rule:</strong><br>
+            <code>---</code></p>
+            <p><strong>Tables:</strong><br>
+            <code>| Header 1 | Header 2 |<br>| --- | --- |<br>| Row 1 Col1 | Row1 Col2 |</code></p>
+            <p><strong>Task Lists:</strong><br>
+            <code>- [ ] Incomplete item<br>- [x] Completed item</code></p>
+            <p><strong>Latest Uploaded Image:</strong><br>
+            <div id="latest-markdown" style="background:#e9ecef; padding:5px; border-radius:3px; font-family:monospace;">(No image uploaded yet)</div></p>
         </div>
+
     </div>
 </div>
 
@@ -325,34 +361,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  async function uploadImage(fileName, fileContentBase64) {
-    statusMessage.style.display = "block";
-    statusMessage.textContent = "Uploading image...";
-    uploadButton.disabled = true;
-    try {
-      const filePath = `images/${fileName}`;
-      await octokit.rest.repos.createOrUpdateFileContents({
-        owner: GITHUB_OWNER,
-        repo: GITHUB_REPO,
-        path: filePath,
-        message: `feat: Add image ${fileName}`,
-        content: fileContentBase64,
-        branch: GITHUB_BRANCH,
-      });
-      const markdownText = `![${fileName}](https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/images/${fileName})`;
-      editor.value += `\n${markdownText}\n`;
-      updatePreview();
-      latestMarkdown.textContent = markdownText;
-      statusMessage.textContent = "✅ Image uploaded successfully!";
-      statusMessage.style.color = "green";
-    } catch (error) {
-      console.error(error);
-      statusMessage.textContent = `❌ Error uploading image: ${error.message}`;
-      statusMessage.style.color = "red";
-    } finally {
-      uploadButton.disabled = false;
-    }
+ async function uploadImage(fileName, fileContentBase64) {
+  statusMessage.style.display = "block";
+  statusMessage.textContent = "Uploading image...";
+  uploadButton.disabled = true;
+  try {
+    const filePath = `images/${fileName}`;
+    await octokit.rest.repos.createOrUpdateFileContents({
+      owner: GITHUB_OWNER,
+      repo: GITHUB_REPO,
+      path: filePath,
+      message: `feat: Add image ${fileName}`,
+      content: fileContentBase64,
+      branch: GITHUB_BRANCH,
+    });
+
+    // Only update the "Latest Uploaded Image" box, do NOT append to editor
+    const markdownText = `![${fileName}](https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/images/${fileName})`;
+    latestMarkdown.textContent = markdownText;
+
+    statusMessage.textContent = "✅ Image uploaded successfully! Copy the Markdown from above.";
+    statusMessage.style.color = "green";
+  } catch (error) {
+    console.error(error);
+    statusMessage.textContent = `❌ Error uploading image: ${error.message}`;
+    statusMessage.style.color = "red";
+  } finally {
+    uploadButton.disabled = false;
   }
+}
+
 
   async function saveFile() {
     saveButton.disabled = true;
