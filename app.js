@@ -2,7 +2,7 @@
 // --- Part 1: Global Constants & Variables ---
 
 const CLIENT_ID = "2ptu70q0dmba7o1ustv95h4tsf";
-const REDIRECT_URI = "https://support.clearly.app/"; // CHNAGE WITH PROD
+const REDIRECT_URI = "https://support.clearly.app"; // CHNAGE WITH PROD
 const ADMIN_EMAIL = "support@futureinsight.nl";
 
 const COGNITO_USER_POOL_DOMAIN = "auth.clearly.app";
