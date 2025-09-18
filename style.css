@@ -681,14 +681,14 @@ li {
 }
 
 .user-controls {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    z-index: 100;
+    position: fixed;
+    bottom: 20px;   /* distance above the very bottom (so not inside footer) */
+    right: 20px;    /* stays tucked to the right */
+    z-index: 1000;
     background-color: #f4f7f6;
     padding: 5px 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .login-logout {
