@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateLoginUI();
 
     // --- Language Switcher ---
-    const langLinks = document.querySelectorAll('.lang-link');
+    const langLinks = document.querySelectorAll('.language-switcher .lang-link'); 
     langLinks.forEach(link => {
         link.addEventListener('click', (event) => {
             event.preventDefault();
@@ -404,7 +404,8 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('language', selectedLang);
             setActiveLanguageLink(selectedLang);
             toggleFeedbackContent(selectedLang);
-            updateUIText(selectedLang);
+            updateUIText(selectedLang); // Update homepage/contact text
+
             if (document.querySelector('.page-container-new')) {
                 loadMarkdownContent();
             }
