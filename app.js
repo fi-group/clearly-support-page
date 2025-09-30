@@ -250,24 +250,6 @@ function scrollToAndHighlight(term) {
 }
 
 // --- 4. PAGE LOGIC & UI ---
-function updateUIText(lang) {
-    // Update regular text elements
-    document.querySelectorAll('[data-lang-text-en]').forEach(el => {
-        const text = el.getAttribute(`data-lang-text-${lang}`);
-        if (text) {
-            el.textContent = text;
-        }
-    });
-
-    // Update placeholder text for input fields
-    document.querySelectorAll('[data-lang-placeholder-en]').forEach(el => {
-        const placeholder = el.getAttribute(`data-lang-placeholder-${lang}`);
-        if (placeholder) {
-            el.placeholder = placeholder;
-        }
-    });
-}
-
 function getPageInfoFromURL() {
     const pathParts = window.location.pathname.split('/').filter(part => part && !part.endsWith('.html'));
     if (pathParts.length === 0) {
@@ -295,7 +277,7 @@ function getCurrentLanguage() {
 }
 
 function setActiveLanguageLink(lang) {
-    document.querySelectorAll('.lang-link').forEach(link => {
+    document.querySelectorAll('.language-switcher a').forEach(link => {
         link.classList.toggle('active', link.dataset.lang === lang);
     });
 }
@@ -303,6 +285,27 @@ function setActiveLanguageLink(lang) {
 function toggleFeedbackContent(lang) {
     document.querySelectorAll('.feedback-lang').forEach(div => {
         div.style.display = (div.dataset.lang === lang) ? 'block' : 'none';
+    });
+}
+
+function toggleContactContent(lang) {
+    document.querySelectorAll('.contact-list').forEach(div => {
+        div.style.display = (div.dataset.lang === lang) ? 'block' : 'none';
+    });
+}
+
+function updateUIText(lang) {
+    document.querySelectorAll('[data-lang-text-en]').forEach(el => {
+        const text = el.getAttribute(`data-lang-text-${lang}`);
+        if (text) {
+            el.textContent = text;
+        }
+    });
+    document.querySelectorAll('[data-lang-placeholder-en]').forEach(el => {
+        const placeholder = el.getAttribute(`data-lang-placeholder-${lang}`);
+        if (placeholder) {
+            el.placeholder = placeholder;
+        }
     });
 }
 async function loadMarkdownContent() {
@@ -344,26 +347,16 @@ async function loadMarkdownContent() {
 function updateProductPageUI() {
     const { product, pageType } = getPageInfoFromURL();
     if (!product) return;
-
     let productName = product.charAt(0).toUpperCase() + product.slice(1);
     if (product === 'bim') productName = 'BIM';
-    if (product === '3d') productName = '3D-City'; // Use the full name
-
+    if (product === '3d') productName = '3D-City';
     let pageTypeName = pageType.charAt(0).toUpperCase() + pageType.slice(1);
     if (pageType === 'faq') pageTypeName = 'FAQ';
-
-    // Set page title in the browser tab
     document.title = `Clearly ${productName} - ${pageTypeName}`;
-    
-    // Set sidebar product title
     const productTitleEl = document.getElementById('product-title');
     if (productTitleEl) productTitleEl.textContent = `Clearly.${productName}`;
-
-    // Set main content title
     const pageMainTitleEl = document.getElementById('page-main-title');
     if (pageMainTitleEl) pageMainTitleEl.textContent = `${pageTypeName} - ${productName}`;
-
-    // Set active navigation link
     document.querySelectorAll('.product-nav li').forEach(li => {
         li.classList.remove('active');
     });
@@ -373,7 +366,6 @@ function updateProductPageUI() {
 
 // --- 5. MAIN INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Check for language override from URL ---
     const urlParams = new URLSearchParams(window.location.search);
     const langFromURL = urlParams.get('lang');
     if (langFromURL && LANGUAGES.includes(langFromURL)) {
@@ -381,7 +373,6 @@ document.addEventListener('DOMContentLoaded', () => {
         history.replaceState(null, '', window.location.pathname + window.location.hash);
     }
 
-    // --- Authentication ---
     const loginButton = document.getElementById('login-button');
     const logoutButton = document.getElementById('logout-button');
     if (loginButton) loginButton.addEventListener('click', initiateLogin);
@@ -395,24 +386,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateLoginUI();
 
-    // --- Language Switcher ---
-    const langLinks = document.querySelectorAll('.language-switcher a'); 
+    const langLinks = document.querySelectorAll('.language-switcher a');
     langLinks.forEach(link => {
         link.addEventListener('click', (event) => {
-            event.preventDefault(); // This will now ONLY apply to language links
+            event.preventDefault();
             const selectedLang = event.target.dataset.lang;
             localStorage.setItem('language', selectedLang);
             setActiveLanguageLink(selectedLang);
             toggleFeedbackContent(selectedLang);
+            toggleContactContent(selectedLang);
             updateUIText(selectedLang);
-
             if (document.querySelector('.page-container-new')) {
                 loadMarkdownContent();
             }
         });
     });
 
-    // --- Homepage Search ---
     const searchBar = document.querySelector('.home-search-bar');
     if (searchBar) {
         buildSearchCache();
@@ -429,10 +418,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- General Page Initialization ---
     const currentLanguage = getCurrentLanguage();
     setActiveLanguageLink(currentLanguage);
     toggleFeedbackContent(currentLanguage);
+    toggleContactContent(currentLanguage);
     updateUIText(currentLanguage);
 
     if (document.querySelector('.page-container-new')) {
