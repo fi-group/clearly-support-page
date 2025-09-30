@@ -1,15 +1,15 @@
-// -------------- Login/Logout Start --------------
-// --- Part 1: Global Constants & Variables ---
-
+// --- 1. CONSTANTS and GLOBALS ---
 const CLIENT_ID = "2ptu70q0dmba7o1ustv95h4tsf";
 const REDIRECT_URI = "https://support.clearly.app";
 const ADMIN_EMAIL = "support@futureinsight.nl";
-
 const COGNITO_USER_POOL_DOMAIN = "auth.clearly.app";
 const OAUTH_TOKEN_ENDPOINT = `https://${COGNITO_USER_POOL_DOMAIN}/oauth2/token`;
 
-// --- Part 2: Authentication Helper Functions ---
+const LANGUAGES = ['en', 'nl'];
+const DEFAULT_LANGUAGE = 'en';
+let isContentLoading = false;
 
+// --- 2. AUTHENTICATION FUNCTIONS ---
 function decodeJwt(token) {
     try {
         const base64Url = token.split('.')[1];
@@ -31,10 +31,31 @@ function isUserAdmin() {
     return decodedToken && decodedToken.email === ADMIN_EMAIL;
 }
 
-function generateRandomString(length) { const p = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; let t = ''; for (let i = 0; i < length; i++) { t += p.charAt(Math.floor(Math.random() * p.length)); } return t; }
-async function sha256(plain) { const e = new TextEncoder().encode(plain); return window.crypto.subtle.digest('SHA-256', e); }
-function base64urlencode(buf) { let s = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.byteLength; i++) { s += String.fromCharCode(b[i]); } return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''); }
-async function generateCodeChallenge(v) { const h = await sha256(v); return base64urlencode(h); }
+function generateRandomString(length) {
+    const p = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let t = '';
+    for (let i = 0; i < length; i++) {
+        t += p.charAt(Math.floor(Math.random() * p.length));
+    }
+    return t;
+}
+async function sha256(plain) {
+    const e = new TextEncoder().encode(plain);
+    return window.crypto.subtle.digest('SHA-256', e);
+}
+
+function base64urlencode(buf) {
+    let s = '';
+    const b = new Uint8Array(buf);
+    for (let i = 0; i < b.byteLength; i++) {
+        s += String.fromCharCode(b[i]);
+    }
+    return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+async function generateCodeChallenge(v) {
+    const h = await sha256(v);
+    return base64urlencode(h);
+}
 
 function showNotification(message, type = 'success') {
     const popup = document.getElementById('notification-popup');
@@ -47,37 +68,43 @@ function showNotification(message, type = 'success') {
     closeBtn.onclick = hideNotification;
     setTimeout(hideNotification, 5000);
 }
-
-
-// --- Part 3: Authentication Core Logic ---
-
 async function initiateLogin() {
     const verifier = generateRandomString(128);
     sessionStorage.setItem('pkce_code_verifier', verifier);
     const challenge = await generateCodeChallenge(verifier);
-    // NEW URL with &prompt=login
     const url = `https://${COGNITO_USER_POOL_DOMAIN}/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=openid+profile+email&code_challenge=${challenge}&code_challenge_method=S256&prompt=login`;
     window.location.href = url;
 }
-
 async function exchangeCodeForTokens(code, verifier) {
-    const body = new URLSearchParams({ grant_type: 'authorization_code', client_id: CLIENT_ID, code, redirect_uri: REDIRECT_URI, code_verifier: verifier });
+    const body = new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: CLIENT_ID,
+        code,
+        redirect_uri: REDIRECT_URI,
+        code_verifier: verifier
+    });
     try {
-        const response = await fetch(OAUTH_TOKEN_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
-        if (!response.ok) { throw new Error('Token exchange failed'); }
+        const response = await fetch(OAUTH_TOKEN_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body
+        });
+        if (!response.ok) {
+            throw new Error('Token exchange failed');
+        }
         const data = await response.json();
         const decodedToken = decodeJwt(data.id_token);
-
         if (decodedToken && decodedToken.email === ADMIN_EMAIL) {
             localStorage.setItem('accessToken', data.access_token);
             localStorage.setItem('idToken', data.id_token);
             showNotification("You are currently logged in with the Support account.", 'success');
         } else {
             showNotification("Only Future Insight admins can use 'Admin Login'.", 'error');
-            // Then, perform a full logout to clear the Cognito session.
             setTimeout(() => {
                 handleLogout();
-            }, 500); // 0.5 second delay
+            }, 500);
         }
     } catch (e) {
         console.error('Token exchange error:', e);
@@ -94,41 +121,168 @@ function handleLogout() {
     window.location.href = url;
 }
 
-// Update UI based on login state
 function updateLoginUI() {
     const loginButton = document.getElementById('login-button');
     const logoutButton = document.getElementById('logout-button');
-    const editorLink = document.getElementById('editor-link'); // Get the new link
-    
-    if (!loginButton || !logoutButton || !editorLink) return;
-
+    const editorLink = document.getElementById('editor-link');
+    if (!loginButton || !logoutButton) return;
     if (localStorage.getItem('idToken')) {
         loginButton.style.display = 'none';
         logoutButton.style.display = 'block';
-
-        // Check if the user is the admin to show the "Editor" link
-        if (isUserAdmin()) {
+        if (editorLink && isUserAdmin()) {
             editorLink.style.display = 'inline-block';
-        } else {
-            editorLink.style.display = 'none';
         }
-
     } else {
         loginButton.style.display = 'block';
         logoutButton.style.display = 'none';
-        editorLink.style.display = 'none';
+        if (editorLink) {
+            editorLink.style.display = 'none';
+        }
     }
 }
 
 
-// --- Part 4: Main Application Logic ---
-function getPageType() {
-    const path = window.location.pathname;
-    if (path.includes('/FAQ/')) return 'faq';
-    if (path.includes('/VERSIONS/')) return 'versions';
-    if (path.includes('/CONTACT/')) return 'contact';
-    if (path.endsWith('index.html') || path.endsWith('/') || path === '') return 'home';
-    return 'home';
+// --- 3. SEARCH FUNCTIONALITY ---
+const SEARCH_INDEX = [
+    { product: '3d', page: 'faq', lang: 'en' }, { product: '3d', page: 'versions', lang: 'en' },
+    { product: 'bim', page: 'faq', lang: 'en' }, { product: 'bim', page: 'versions', lang: 'en' },
+    { product: 'hub', page: 'faq', lang: 'en' }, { product: 'hub', page: 'versions', lang: 'en' },
+    { product: 'projects', page: 'faq', lang: 'en' }, { product: 'projects', page: 'versions', lang: 'en' },
+    { product: '3d', page: 'faq', lang: 'nl' }, { product: '3d', page: 'versions', lang: 'nl' },
+    { product: 'bim', page: 'faq', lang: 'nl' }, { product: 'bim', page: 'versions', lang: 'nl' },
+    { product: 'hub', page: 'faq', lang: 'nl' }, { product: 'hub', page: 'versions', lang: 'nl' },
+    { product: 'projects', page: 'faq', lang: 'nl' }, { product: 'projects', page: 'versions', lang: 'nl' },
+];
+const searchCache = {};
+
+async function buildSearchCache() {
+    for (const item of SEARCH_INDEX) {
+        const filePath = `./content/${item.lang}/${item.product}/${item.page}.md`;
+        try {
+            const response = await fetch(filePath);
+            if (response.ok) {
+                searchCache[filePath] = await response.text();
+            }
+        } catch (error) {
+            console.error(`Could not fetch ${filePath} for search cache.`, error);
+        }
+    }
+}
+
+function searchContent(query) {
+    if (!query || query.length < 2) {
+        return [];
+    }
+    const results = [];
+    const lowerCaseQuery = query.toLowerCase();
+    for (const item of SEARCH_INDEX) {
+        const filePath = `./content/${item.lang}/${item.product}/${item.page}.md`;
+        const content = searchCache[filePath];
+        if (content) {
+            const lowerCaseContent = content.toLowerCase();
+            const matchIndex = lowerCaseContent.indexOf(lowerCaseQuery);
+            if (matchIndex > -1) {
+                const startIndex = Math.max(0, matchIndex - 30);
+                const endIndex = Math.min(content.length, matchIndex + 70);
+                let snippet = content.substring(startIndex, endIndex);
+                const regex = new RegExp(query, 'gi');
+                snippet = snippet.replace(regex, (match) => `<strong>${match}</strong>`);
+                results.push({
+                    product: item.product,
+                    page: item.page,
+                    lang: item.lang,
+                    title: `${item.product.toUpperCase()} - ${item.page.toUpperCase()} (${item.lang.toUpperCase()})`,
+                    url: `/${item.product}/${item.page}.html`,
+                    snippet: `...${snippet}...`
+                });
+            }
+        }
+    }
+    return results;
+}
+
+function displaySearchResults(results, query) {
+    const container = document.getElementById('search-results-container');
+    if (!container) return;
+    if (results.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+    const encodedQuery = encodeURIComponent(query);
+    container.innerHTML = results.map(result => `
+        <a href="${result.url}?lang=${result.lang}#search=${encodedQuery}" class="search-result-item">
+            <div class="search-result-title">${result.title}</div>
+            <div class="search-result-snippet">${result.snippet}</div>
+        </a>
+    `).join('');
+}
+
+function getHighlightTermFromURL() {
+    if (window.location.hash && window.location.hash.startsWith('#search=')) {
+        const term = window.location.hash.substring(8);
+        return decodeURIComponent(term);
+    }
+    return null;
+}
+
+function scrollToAndHighlight(term) {
+    const container = document.getElementById('markdown-content');
+    if (!container || !term) return;
+    const regex = new RegExp(`(${term})`, 'gi');
+    const elements = container.querySelectorAll('p, li, td, h1, h2, h3, h4');
+    let targetElement = null;
+    for (const el of elements) {
+        if (el.textContent.toLowerCase().includes(term.toLowerCase())) {
+            el.innerHTML = el.innerHTML.replace(regex, `<span class="highlight-search">$1</span>`);
+            targetElement = el.querySelector('.highlight-search');
+            break;
+        }
+    }
+    if (targetElement) {
+        targetElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+        setTimeout(() => {
+            targetElement.style.backgroundColor = 'transparent';
+        }, 2000);
+    }
+}
+
+// --- 4. PAGE LOGIC & UI ---
+function updateUIText(lang) {
+    // Update regular text elements
+    document.querySelectorAll('[data-lang-text-en]').forEach(el => {
+        const text = el.getAttribute(`data-lang-text-${lang}`);
+        if (text) {
+            el.textContent = text;
+        }
+    });
+
+    // Update placeholder text for input fields
+    document.querySelectorAll('[data-lang-placeholder-en]').forEach(el => {
+        const placeholder = el.getAttribute(`data-lang-placeholder-${lang}`);
+        if (placeholder) {
+            el.placeholder = placeholder;
+        }
+    });
+}
+
+function getPageInfoFromURL() {
+    const pathParts = window.location.pathname.split('/').filter(part => part && !part.endsWith('.html'));
+    if (pathParts.length === 0) {
+        return {
+            product: null,
+            pageType: 'home'
+        };
+    }
+    const product = pathParts[0];
+    const pageName = window.location.pathname.split('/').pop().replace('.html', '');
+    const pageType = ['documentation', 'versions', 'faq'].includes(pageName) ? pageName : 'home';
+    return {
+        product,
+        pageType
+    };
 }
 
 function getCurrentLanguage() {
@@ -136,308 +290,152 @@ function getCurrentLanguage() {
         const storedLang = localStorage.getItem('language');
         return LANGUAGES.includes(storedLang) ? storedLang : DEFAULT_LANGUAGE;
     } catch (e) {
-        console.warn("LocalStorage not available for retrieving language.", e);
         return DEFAULT_LANGUAGE;
     }
 }
-// -------------- Login/Logout End --------------
 
+function setActiveLanguageLink(lang) {
+    document.querySelectorAll('.lang-link').forEach(link => {
+        link.classList.toggle('active', link.dataset.lang === lang);
+    });
+}
 
-// Add constants for languages and a default language
-const LANGUAGES = ['en', 'nl'];
-const DEFAULT_LANGUAGE = 'en';
+function toggleFeedbackContent(lang) {
+    document.querySelectorAll('.feedback-lang').forEach(div => {
+        div.style.display = (div.dataset.lang === lang) ? 'block' : 'none';
+    });
+}
+async function loadMarkdownContent() {
+    const container = document.getElementById('markdown-content');
+    if (!container || isContentLoading) return;
+    isContentLoading = true;
+    const {
+        product,
+        pageType
+    } = getPageInfoFromURL();
+    const currentLanguage = getCurrentLanguage();
+    if (!product || !pageType) {
+        isContentLoading = false;
+        return;
+    }
+    const filePath = `../content/${currentLanguage}/${product}/${pageType}.md`;
+    container.innerHTML = '<p>Loading...</p>';
+    try {
+        const response = await fetch(filePath, {
+            cache: 'no-cache'
+        });
+        if (!response.ok) throw new Error(`Could not fetch ${filePath}`);
+        const markdownText = await response.text();
+        if (typeof marked === 'undefined') throw new Error("Marked.js library is not loaded.");
+        container.innerHTML = marked.parse(markdownText);
+        const termToHighlight = getHighlightTermFromURL();
+        if (termToHighlight) {
+            scrollToAndHighlight(termToHighlight);
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+    } catch (error) {
+        console.error('Error loading content:', error);
+        container.innerHTML = `<p style="color: red;">Error loading content.</p>`;
+    } finally {
+        isContentLoading = false;
+    }
+}
 
-// Variables for video scrubbing animation
-let currentVideoTime = 0;
-let targetVideoTime = 0;
-let isAnimating = false;
-let backgroundVideo = null;
+function updateProductPageUI() {
+    const { product, pageType } = getPageInfoFromURL();
+    if (!product) return;
 
-// Flag to prevent multiple content loads at once
-let isContentLoading = false;
+    let productName = product.charAt(0).toUpperCase() + product.slice(1);
+    if (product === 'bim') productName = 'BIM';
+    if (product === '3d') productName = '3D-City'; // Use the full name
 
-// Wait until the HTML document is fully loaded and parsed
+    let pageTypeName = pageType.charAt(0).toUpperCase() + pageType.slice(1);
+    if (pageType === 'faq') pageTypeName = 'FAQ';
+
+    // Set page title in the browser tab
+    document.title = `Clearly ${productName} - ${pageTypeName}`;
+    
+    // Set sidebar product title
+    const productTitleEl = document.getElementById('product-title');
+    if (productTitleEl) productTitleEl.textContent = `Clearly.${productName}`;
+
+    // Set main content title
+    const pageMainTitleEl = document.getElementById('page-main-title');
+    if (pageMainTitleEl) pageMainTitleEl.textContent = `${pageTypeName} - ${productName}`;
+
+    // Set active navigation link
+    document.querySelectorAll('.product-nav li').forEach(li => {
+        li.classList.remove('active');
+    });
+    const activeNav = document.getElementById(`nav-${pageType}`);
+    if (activeNav) activeNav.classList.add('active');
+}
+
+// --- 5. MAIN INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
-
-    // ==========================================================
-    // ========== Part 1: Original Application Setup ============
-    // ==========================================================
-
-    const PRODUCTS = ['3d', 'bim', 'hub', 'projects'];
-    const DEFAULT_PRODUCT = 'projects';
-
-    // --- Get DOM Elements ---
-    const productTabs = document.querySelectorAll('.product-tabs .tab-link');
-    const productContents = document.querySelectorAll('.main-content .product-content');
-    const langLinks = document.querySelectorAll('.lang-link');
-    const scrollableArea = document.querySelector('.scrollable-area');
-    
-    // --- Original Functions ---
-
-    function getPageType() {
-        const path = window.location.pathname;
-        if (path.includes('/FAQ/')) return 'faq';
-        if (path.includes('/VERSIONS/')) return 'versions';
-        if (path.includes('/CONTACT/')) return 'contact';
-        if (path.endsWith('index.html') || path.endsWith('/') || path === '') return 'home';
-        return 'home';
-    }
-    const currentPageType = getPageType();
-
-    function getCurrentLanguage() {
-        try {
-            const storedLang = localStorage.getItem('language');
-            return LANGUAGES.includes(storedLang) ? storedLang : DEFAULT_LANGUAGE;
-        } catch (e) {
-            console.warn("LocalStorage not available for retrieving language.", e);
-            return DEFAULT_LANGUAGE;
-        }
+    // --- Check for language override from URL ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const langFromURL = urlParams.get('lang');
+    if (langFromURL && LANGUAGES.includes(langFromURL)) {
+        localStorage.setItem('language', langFromURL);
+        history.replaceState(null, '', window.location.pathname + window.location.hash);
     }
 
-    function setActiveLanguageLink(lang) {
-        langLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.dataset.lang === lang) {
-                link.classList.add('active');
-            }
-        });
-    }
-
-    async function fetchMarkdownContent(productId, pageType, container) {
-        if (!container || isContentLoading) {
-            return;
-        }
-
-        isContentLoading = true;
-        const currentLanguage = getCurrentLanguage();
-        const isRootPage = (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/'));
-        const basePath = isRootPage ? '' : '../';
-        const filePath = `${basePath}content/${currentLanguage}/${productId}/${pageType}.md`;
-
-        container.innerHTML = '<p>Loading...</p>';
-
-        try {
-            const response = await fetch(filePath, {
-                cache: 'no-cache'
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status} loading ${filePath}`);
-            }
-
-            const markdownText = await response.text();
-
-            if (typeof marked === 'undefined') {
-                throw new Error("Marked.js library is not loaded. Please include it in your HTML.");
-            }
-
-            container.innerHTML = marked.parse(markdownText);
-
-        } catch (error) {
-            console.error('Error loading or parsing Markdown content:', error);
-            container.innerHTML = `<p style="color: red; font-weight: bold;">Error loading content.</p><p style="color: #666; font-size: 0.9em;">Could not load: ${filePath}<br/>${error.message}</p>`;
-        } finally {
-            isContentLoading = false;
-        }
-    }
-
-    function toggleHomePageContent(lang, productId) {
-        const productContentDiv = document.querySelector(`.product-content[data-product="${productId}"]`);
-        if (!productContentDiv) return;
-
-        const allContentDivs = productContentDiv.querySelectorAll('.home-content-lang');
-        allContentDivs.forEach(div => {
-            if (div.dataset.lang === lang) {
-                div.style.display = 'block';
-            } else {
-                div.style.display = 'none';
-            }
-        });
-    }
-
-    function toggleFeedbackContent(lang) {
-        const feedbackDivs = document.querySelectorAll('.feedback-lang');
-        feedbackDivs.forEach(div => {
-            if (div.dataset.lang === lang) {
-                div.style.display = 'block';
-            } else {
-                div.style.display = 'none';
-            }
-        });
-    }
-
-    function toggleContactContent(lang) {
-        const contactDivs = document.querySelectorAll('.contact-list');
-        contactDivs.forEach(div => {
-            if (div.dataset.lang === lang) {
-                div.style.display = 'block';
-            } else {
-                div.style.display = 'none';
-            }
-        });
-    }
-
-    function loadContent(selectedProductId) {
-        if (isContentLoading) return;
-
-        const validProductId = PRODUCTS.includes(selectedProductId) ? selectedProductId : DEFAULT_PRODUCT;
-
-        backgroundVideo = document.querySelector(`.product-content[data-product="${validProductId}"] video`);
-
-        if (scrollableArea) {
-            scrollableArea.removeEventListener('scroll', animateVideoOnScroll);
-        }
-
-        productTabs.forEach(tab => {
-            tab.classList.toggle('active', tab.dataset.product === validProductId);
-        });
-
-        productContents.forEach(contentDiv => {
-            const isMatch = contentDiv.dataset.product === validProductId;
-            contentDiv.style.display = isMatch ? 'block' : 'none';
-
-            if (isMatch) {
-                if (currentPageType === 'home') {
-                    const currentLanguage = getCurrentLanguage();
-                    toggleHomePageContent(currentLanguage, validProductId);
-
-                    if ((validProductId === '3d' || validProductId === 'projects'|| validProductId === 'hub' || validProductId === 'bim') && scrollableArea) {
-                        scrollableArea.addEventListener('scroll', animateVideoOnScroll);
-
-                        const scrollableContent = document.querySelector(`.product-content[data-product="${validProductId}"] .scrollable-content`);
-                        const scrollbarSpacer = document.querySelector('.video-scrub-spacer');
-                        if (scrollableContent && scrollbarSpacer) {
-                            if (scrollableContent.scrollHeight <= window.innerHeight) {
-                                scrollbarSpacer.style.height = '150vh';
-                            } else {
-                                scrollbarSpacer.style.height = '0';
-                            }
-                        }
-                    }
-                } else {
-                    const markdownContainer = contentDiv.querySelector('.markdown-container');
-                    if (markdownContainer) {
-                        fetchMarkdownContent(validProductId, currentPageType, markdownContainer);
-                    }
-                }
-            }
-        });
-
-        try {
-            localStorage.setItem('selectedProduct', validProductId);
-        } catch (e) {
-            console.warn("LocalStorage not available. Product selection will not persist.", e);
-        }
-    }
-    
-    function switchLanguage(lang) {
-        try {
-            localStorage.setItem('language', lang);
-        } catch (e) {
-            console.warn("LocalStorage not available for saving language preference.", e);
-        }
-        
-        setActiveLanguageLink(lang);
-        toggleFeedbackContent(lang);
-        toggleContactContent(lang);
-
-        if (currentPageType === 'home') {
-            loadContent(localStorage.getItem('selectedProduct'));
-        } else {
-            loadContent(localStorage.getItem('selectedProduct'));
-        }
-    }
-    
-    function animateVideoOnScroll() {
-        if (!backgroundVideo) return;
-        if (!scrollableArea) return;
-
-        const scrollHeight = scrollableArea.scrollHeight - scrollableArea.clientHeight;
-        const scrollPosition = scrollableArea.scrollTop;
-
-        if (backgroundVideo.duration && scrollHeight > 0) {
-            const duration = backgroundVideo.duration;
-            targetVideoTime = (scrollPosition / scrollHeight) * duration;
-        }
-
-        if (!isAnimating) {
-            updateVideoTime();
-        }
-    }
-    
-    function updateVideoTime() {
-        isAnimating = true;
-        currentVideoTime += (targetVideoTime - currentVideoTime) * 0.1;
-        backgroundVideo.currentTime = Math.max(0, Math.min(backgroundVideo.duration, currentVideoTime));
-
-        if (Math.abs(targetVideoTime - currentVideoTime) > 0.01) {
-            window.requestAnimationFrame(updateVideoTime);
-        } else {
-            isAnimating = false;
-        }
-    }
-
-    // ==========================================================
-    // ========== Part 2: Authentication Logic Setup ============
-    // ==========================================================
-
+    // --- Authentication ---
     const loginButton = document.getElementById('login-button');
     const logoutButton = document.getElementById('logout-button');
-
     if (loginButton) loginButton.addEventListener('click', initiateLogin);
     if (logoutButton) logoutButton.addEventListener('click', handleLogout);
-
-    const urlParams = new URLSearchParams(window.location.search);
+    
     const code = urlParams.get('code');
     const codeVerifier = sessionStorage.getItem('pkce_code_verifier');
-
     if (code && codeVerifier) {
         exchangeCodeForTokens(code, codeVerifier);
         window.history.replaceState({}, document.title, window.location.pathname);
     }
-    
-    updateLoginUI(); 
+    updateLoginUI();
 
-    // ==========================================================
-    // ===== Part 3: Combined Initialization & Event Listeners ====
-    // ==========================================================
-
-    // --- Original Event Listeners ---
-    productTabs.forEach(tab => {
-        if (tab.dataset.product) {
-            tab.addEventListener('click', (event) => {
-                loadContent(event.target.dataset.product);
-            });
-        }
-    });
-
+    // --- Language Switcher ---
+    const langLinks = document.querySelectorAll('.lang-link');
     langLinks.forEach(link => {
-        if (link.dataset.lang) {
-            link.addEventListener('click', (event) => {
-                event.preventDefault();
-                const selectedLang = event.target.dataset.lang;
-                switchLanguage(selectedLang);
-            });
-        }
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const selectedLang = event.target.dataset.lang;
+            localStorage.setItem('language', selectedLang);
+            setActiveLanguageLink(selectedLang);
+            toggleFeedbackContent(selectedLang);
+            updateUIText(selectedLang);
+            if (document.querySelector('.page-container-new')) {
+                loadMarkdownContent();
+            }
+        });
     });
 
-    // --- Original Initialization ---
-    let initialProduct = DEFAULT_PRODUCT;
-    try {
-        const storedProduct = localStorage.getItem('selectedProduct');
-        if (storedProduct && PRODUCTS.includes(storedProduct)) {
-            initialProduct = storedProduct;
-        } else {
-            localStorage.setItem('selectedProduct', initialProduct);
-        }
-    } catch (e) {
-        console.warn("LocalStorage not available for retrieving initial product.", e);
+    // --- Homepage Search ---
+    const searchBar = document.querySelector('.home-search-bar');
+    if (searchBar) {
+        buildSearchCache();
+        searchBar.addEventListener('input', () => {
+            const query = searchBar.value;
+            const results = searchContent(query);
+            displaySearchResults(results, query);
+        });
+        document.addEventListener('click', (event) => {
+            const container = document.getElementById('search-results-container');
+            if (container && !container.contains(event.target) && event.target !== searchBar) {
+                container.innerHTML = '';
+            }
+        });
     }
-    
+
+    // --- General Page Initialization ---
     const currentLanguage = getCurrentLanguage();
     setActiveLanguageLink(currentLanguage);
     toggleFeedbackContent(currentLanguage);
-    toggleContactContent(currentLanguage);
+    updateUIText(currentLanguage);
 
-    loadContent(initialProduct);
+    if (document.querySelector('.page-container-new')) {
+        updateProductPageUI();
+        loadMarkdownContent();
+    }
 });
