@@ -251,6 +251,45 @@ body.dark-theme-home { background-color: #181818; color: #f0f0f0; }
 .search-result-snippet strong { color: #58b4cc; font-weight: normal; }
 .highlight-search { background-color: #f7e77b; transition: background-color 0.5s ease-out; }
 
+/* Search Bar inside pages */
+/* --- Styles for Product Page Search Bar --- */
+.page-search-container {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto 40px auto;
+}
+
+.page-search-bar {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1em;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+/* Style adjustments for search results on a light background */
+#search-results-container {
+    background-color: #fff;
+    color: #333;
+}
+
+.search-result-item {
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.search-result-item:hover {
+    background-color: #f8f9fa;
+}
+
+.search-result-title {
+    color: #495057;
+}
+
+.search-result-snippet {
+    color: #6c757d;
+}
+
 /* === 5. IFrame === */
 /* --- Styles for Embedded Google Slides --- */
 

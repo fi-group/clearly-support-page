@@ -141,7 +141,6 @@ function updateLoginUI() {
     }
 }
 
-
 // --- 3. SEARCH FUNCTIONALITY ---
 const SEARCH_INDEX = [
     { product: '3d', page: 'faq', lang: 'en' }, { product: '3d', page: 'versions', lang: 'en' },
@@ -156,12 +155,15 @@ const SEARCH_INDEX = [
 const searchCache = {};
 
 async function buildSearchCache() {
+    const { product } = getPageInfoFromURL();
+    const basePath = product ? '..' : '.';
     for (const item of SEARCH_INDEX) {
-        const filePath = `./content/${item.lang}/${item.product}/${item.page}.md`;
+        const filePath = `${basePath}/content/${item.lang}/${item.product}/${item.page}.md`;
         try {
             const response = await fetch(filePath);
             if (response.ok) {
-                searchCache[filePath] = await response.text();
+                const cacheKey = `./content/${item.lang}/${item.product}/${item.page}.md`;
+                searchCache[cacheKey] = await response.text();
             }
         } catch (error) {
             console.error(`Could not fetch ${filePath} for search cache.`, error);
@@ -169,15 +171,24 @@ async function buildSearchCache() {
     }
 }
 
-function searchContent(query) {
+function searchContent(query, productScope = null, pageScope = null) {
     if (!query || query.length < 2) {
         return [];
     }
     const results = [];
     const lowerCaseQuery = query.toLowerCase();
-    for (const item of SEARCH_INDEX) {
-        const filePath = `./content/${item.lang}/${item.product}/${item.page}.md`;
-        const content = searchCache[filePath];
+
+    let searchSpace = SEARCH_INDEX;
+    if (productScope) {
+        searchSpace = searchSpace.filter(item => item.product === productScope);
+    }
+    if (pageScope) {
+        searchSpace = searchSpace.filter(item => item.page === pageScope);
+    }
+
+    for (const item of searchSpace) {
+        const cacheKey = `./content/${item.lang}/${item.product}/${item.page}.md`;
+        const content = searchCache[cacheKey];
         if (content) {
             const lowerCaseContent = content.toLowerCase();
             const matchIndex = lowerCaseContent.indexOf(lowerCaseQuery);
@@ -191,7 +202,7 @@ function searchContent(query) {
                     product: item.product,
                     page: item.page,
                     lang: item.lang,
-                    title: `${item.product.toUpperCase()} - ${item.page.toUpperCase()} (${item.lang.toUpperCase()})`,
+                    title: `${item.page.toUpperCase()} - ${item.lang.toUpperCase()}`,
                     url: `/${item.product}/${item.page}.html`,
                     snippet: `...${snippet}...`
                 });
@@ -249,15 +260,14 @@ function scrollToAndHighlight(term) {
     }
 }
 
+
 // --- 4. PAGE LOGIC & UI ---
-async function updateDocumentationFrame(lang) {
+function updateDocumentationFrame(lang) {
     const slideContainer = document.querySelector('.slide-container');
     if (!slideContainer) return;
-
     const iframe = slideContainer.querySelector('iframe');
     const errorMessage = slideContainer.querySelector('.slide-error-message');
     const url = slideContainer.getAttribute(`data-src-${lang}`);
-
     const showError = () => {
         iframe.style.display = 'none';
         errorMessage.style.display = 'flex';
@@ -266,35 +276,15 @@ async function updateDocumentationFrame(lang) {
         errorMessage.style.display = 'none';
         iframe.style.display = 'block';
     };
-    if (iframe && url) {
-        iframe.onload = function () {
-            // Delay the error check a little so slow-loading pages don’t cause flicker
-            setTimeout(() => {
-                try {
-                    const doc = iframe.contentDocument || iframe.contentWindow.document;
-                    const bodyText = doc.body ? doc.body.innerText.trim() : "";
-
-                    if (!bodyText || bodyText.startsWith("Cannot GET")) {
-                        showError();
-                    } else {
-                        showIframe();
-                    }
-                } catch (err) {
-                    // Cross-origin iframe → can't inspect, just show it
-                    showIframe();
-                }
-            }, 1000); // delay in ms (tweak between 500–1000 if needed)
-        };
-        iframe.onerror = function () {
-            // Add a delay before showing error here too, for consistency
-            setTimeout(showError, 700);
-        };
+    if (iframe && url && url.startsWith('https://')) {
+        showIframe();
         iframe.src = url;
+        iframe.onerror = showError;
     } else {
+        console.error("Invalid or missing documentation URL:", url);
         showError();
     }
 }
-
 
 function getPageInfoFromURL() {
     const pathParts = window.location.pathname.split('/').filter(part => part && !part.endsWith('.html'));
@@ -354,6 +344,7 @@ function updateUIText(lang) {
         }
     });
 }
+
 async function loadMarkdownContent() {
     const container = document.getElementById('markdown-content');
     if (!container || isContentLoading) return;
@@ -408,7 +399,20 @@ function updateProductPageUI() {
     });
     const activeNav = document.getElementById(`nav-${pageType}`);
     if (activeNav) activeNav.classList.add('active');
+
+    const pageSearchContainer = document.querySelector('.page-search-container');
+    if (pageSearchContainer) {
+        if (pageType === 'faq' || pageType === 'versions') {
+            pageSearchContainer.style.display = 'block';
+            const searchBar = pageSearchContainer.querySelector('.page-search-bar');
+            const currentLanguage = getCurrentLanguage();
+            searchBar.placeholder = currentLanguage === 'nl' ? `Zoek in ${pageTypeName}...` : `Search in ${pageTypeName}...`;
+        } else {
+            pageSearchContainer.style.display = 'none';
+        }
+    }
 }
+
 
 // --- 5. MAIN INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -423,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutButton = document.getElementById('logout-button');
     if (loginButton) loginButton.addEventListener('click', initiateLogin);
     if (logoutButton) logoutButton.addEventListener('click', handleLogout);
-    
+
     const code = urlParams.get('code');
     const codeVerifier = sessionStorage.getItem('pkce_code_verifier');
     if (code && codeVerifier) {
@@ -432,7 +436,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateLoginUI();
 
-    // Language Switcher
     const langLinks = document.querySelectorAll('.language-switcher a');
     langLinks.forEach(link => {
         link.addEventListener('click', (event) => {
@@ -443,39 +446,56 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleFeedbackContent(selectedLang);
             toggleContactContent(selectedLang);
             updateUIText(selectedLang);
-            updateDocumentationFrame(selectedLang);
-            if (document.querySelector('.page-container-new')) {
+            if (document.querySelector('.slide-container')) {
+                updateDocumentationFrame(selectedLang);
+            } else if (document.querySelector('.markdown-container')) {
+                updateProductPageUI();
                 loadMarkdownContent();
             }
         });
     });
+    
+    buildSearchCache();
 
-    const searchBar = document.querySelector('.home-search-bar');
-    if (searchBar) {
-        buildSearchCache();
-        searchBar.addEventListener('input', () => {
-            const query = searchBar.value;
+    const homeSearchBar = document.querySelector('.home-search-bar');
+    if (homeSearchBar) {
+        homeSearchBar.addEventListener('input', () => {
+            const query = homeSearchBar.value;
             const results = searchContent(query);
             displaySearchResults(results, query);
         });
-        document.addEventListener('click', (event) => {
-            const container = document.getElementById('search-results-container');
-            if (container && !container.contains(event.target) && event.target !== searchBar) {
-                container.innerHTML = '';
-            }
+    }
+
+    const pageSearchBar = document.querySelector('#page-search-bar');
+    if (pageSearchBar) {
+        pageSearchBar.addEventListener('input', () => {
+            const query = pageSearchBar.value;
+            const { product, pageType } = getPageInfoFromURL();
+            const results = searchContent(query, product, pageType);
+            displaySearchResults(results, query);
         });
     }
 
-    // General Initialization
+    document.addEventListener('click', (event) => {
+        const resultsContainer = document.getElementById('search-results-container');
+        const isClickInsideSearch = event.target.closest('.home-search-container') || event.target.closest('.page-search-container');
+        if (resultsContainer && !isClickInsideSearch) {
+            resultsContainer.innerHTML = '';
+        }
+    });
+
     const currentLanguage = getCurrentLanguage();
     setActiveLanguageLink(currentLanguage);
     toggleFeedbackContent(currentLanguage);
     toggleContactContent(currentLanguage);
     updateUIText(currentLanguage);
-    updateDocumentationFrame(currentLanguage);
-
+    
     if (document.querySelector('.page-container-new')) {
         updateProductPageUI();
-        loadMarkdownContent();
+        if (document.querySelector('.slide-container')) {
+            updateDocumentationFrame(currentLanguage);
+        } else if (document.querySelector('.markdown-container')) {
+            loadMarkdownContent();
+        }
     }
 });
