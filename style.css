@@ -251,7 +251,59 @@ body.dark-theme-home { background-color: #181818; color: #f0f0f0; }
 .search-result-snippet strong { color: #58b4cc; font-weight: normal; }
 .highlight-search { background-color: #f7e77b; transition: background-color 0.5s ease-out; }
 
-/* === 5. RESPONSIVE ADJUSTMENTS === */
+/* === 5. IFrame === */
+/* --- Styles for Embedded Google Slides --- */
+
+.slide-container {
+    position: relative;
+    max-width: 1300px;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    /* For Widescreen (16:9) */
+    padding-top: 56.25%;
+}
+
+.slide-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.main-content-new.documentation-page {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.slide-error-message {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    text-align: center;
+    padding: 20px;
+}
+
+.slide-error-message p:first-child {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+/* === 6. RESPONSIVE ADJUSTMENTS === */
 @media (max-width: 1600px) {
     .home-main-logo { display: none; }
 }

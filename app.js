@@ -250,6 +250,52 @@ function scrollToAndHighlight(term) {
 }
 
 // --- 4. PAGE LOGIC & UI ---
+async function updateDocumentationFrame(lang) {
+    const slideContainer = document.querySelector('.slide-container');
+    if (!slideContainer) return;
+
+    const iframe = slideContainer.querySelector('iframe');
+    const errorMessage = slideContainer.querySelector('.slide-error-message');
+    const url = slideContainer.getAttribute(`data-src-${lang}`);
+
+    const showError = () => {
+        iframe.style.display = 'none';
+        errorMessage.style.display = 'flex';
+    };
+    const showIframe = () => {
+        errorMessage.style.display = 'none';
+        iframe.style.display = 'block';
+    };
+    if (iframe && url) {
+        iframe.onload = function () {
+            // Delay the error check a little so slow-loading pages don’t cause flicker
+            setTimeout(() => {
+                try {
+                    const doc = iframe.contentDocument || iframe.contentWindow.document;
+                    const bodyText = doc.body ? doc.body.innerText.trim() : "";
+
+                    if (!bodyText || bodyText.startsWith("Cannot GET")) {
+                        showError();
+                    } else {
+                        showIframe();
+                    }
+                } catch (err) {
+                    // Cross-origin iframe → can't inspect, just show it
+                    showIframe();
+                }
+            }, 1000); // delay in ms (tweak between 500–1000 if needed)
+        };
+        iframe.onerror = function () {
+            // Add a delay before showing error here too, for consistency
+            setTimeout(showError, 700);
+        };
+        iframe.src = url;
+    } else {
+        showError();
+    }
+}
+
+
 function getPageInfoFromURL() {
     const pathParts = window.location.pathname.split('/').filter(part => part && !part.endsWith('.html'));
     if (pathParts.length === 0) {
@@ -386,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateLoginUI();
 
+    // Language Switcher
     const langLinks = document.querySelectorAll('.language-switcher a');
     langLinks.forEach(link => {
         link.addEventListener('click', (event) => {
@@ -396,6 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleFeedbackContent(selectedLang);
             toggleContactContent(selectedLang);
             updateUIText(selectedLang);
+            updateDocumentationFrame(selectedLang);
             if (document.querySelector('.page-container-new')) {
                 loadMarkdownContent();
             }
@@ -418,11 +466,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // General Initialization
     const currentLanguage = getCurrentLanguage();
     setActiveLanguageLink(currentLanguage);
     toggleFeedbackContent(currentLanguage);
     toggleContactContent(currentLanguage);
     updateUIText(currentLanguage);
+    updateDocumentationFrame(currentLanguage);
 
     if (document.querySelector('.page-container-new')) {
         updateProductPageUI();
