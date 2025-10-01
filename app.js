@@ -198,11 +198,25 @@ function searchContent(query, productScope = null, pageScope = null) {
                 let snippet = content.substring(startIndex, endIndex);
                 const regex = new RegExp(query, 'gi');
                 snippet = snippet.replace(regex, (match) => `<strong>${match}</strong>`);
+                // Handle special capitalizations for product and page names
+                let productName = item.product === 'bim' ? 'BIM' : item.product === '3d' ? '3D-City' : item.product.toUpperCase();
+                let pageName = item.page === 'faq' ? 'FAQ' : item.page.toUpperCase();
+
+                // Conditionally create the title based on whether the search is scoped
+                let resultTitle = '';
+                if (productScope) {
+                    // For scoped searches (on product pages), show "PAGE - LANG"
+                    resultTitle = `${pageName} - ${item.lang.toUpperCase()}`;
+                } else {
+                    // For global search (on homepage), show "PRODUCT - PAGE - LANG"
+                    resultTitle = `${productName} - ${pageName} (${item.lang.toUpperCase()})`;
+                }
+
                 results.push({
                     product: item.product,
                     page: item.page,
                     lang: item.lang,
-                    title: `${item.page.toUpperCase()} - ${item.lang.toUpperCase()}`,
+                    title: resultTitle, // Use the new dynamic title
                     url: `/${item.product}/${item.page}.html`,
                     snippet: `...${snippet}...`
                 });
