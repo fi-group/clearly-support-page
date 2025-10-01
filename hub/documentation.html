@@ -15,8 +15,7 @@
                 <span data-lang-text-en="Home" data-lang-text-nl="Startpagina">Home</span>
             </a>
         </div>
-        <div class="header-center">
-            </div>
+        <div class="header-center"></div>
         <div class="header-right">
             <a href="../contact.html" class="contact-link" data-lang-text-en="Contact Us" data-lang-text-nl="Neem Contact Op">Contact Us</a>
             <div class="language-switcher">
@@ -52,17 +51,22 @@
         </aside>
 
         <div class="content-footer-wrapper">
-            <main class="main-content-new">
-                <header class="main-header">
-                    <h1 id="page-main-title">Loading...</h1>
-                </header>
-                <div class="markdown-container" id="markdown-content">
-                    <p>Loading content...</p>
+            <main class="main-content-new documentation-page">
+                <div class="slide-container" 
+                    data-src-en="https://docs.google.com/presentation/d/e/2PACX-1vSNkaXU40mDACiYYp5HzXGEmXD0dhW8-PkYwXcW9ST_-FNPXlQWdbxLbD1Jj1gwPrDSSr-Ih1dVfs94/pubembed?start=false&loop=true&delayms=3000"
+                    data-src-nl="placeholder">
+                    <div class="slide-error-message" style="display: none;">
+                        <p data-lang-text-en="Could not load documentation." 
+                        data-lang-text-nl="Kon documentatie niet laden."></p>
+                        <p data-lang-text-en="Please try again later or contact support."
+                        data-lang-text-nl="Probeer het later opnieuw of neem contact op met de ondersteuning."></p>
+                    </div>
+                    <iframe src=""></iframe>
                 </div>
             </main>
             <footer class="main-footer">
                 <div class="user-controls">
-                    <a href="../edit.html" id="editor-link" class="lang-link" style="display: none;">Go to Page Editor</a>
+                    <a href="../edit.html" id="editor-link" style="display: none;">Go to Page Editor</a>
                     <button id="login-button" class="login-logout">Admin Login</button>
                     <button id="logout-button" class="login-logout" style="display: none;">Logout</button>
                 </div>
@@ -71,7 +75,6 @@
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="../app.js"></script>
 </body>
 </html>
