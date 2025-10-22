@@ -1,14 +1,12 @@
-# Support FAQ Clearly.3D-City
-Frequently asked questions for Clearly.3D-City support and how to solve them.
-
----
-
 ### 1. Why is my 2D layer draping over 3D buildings?
 
 If a 2D layer drapes over both the terrain and your 3D buildings, you need to adjust a setting in that 2D layer.
 
-Look for the **‘handling in map’** (or similar) setting within the layer's properties and adjust its value (e.g., set it to drape on terrain only).
+![drape-issue.png](https://raw.githubusercontent.com/fi-group/clearly-support-page/main/images/drape-issue.png)
 
+Look for the **'handling in map'** (or similar) setting within the layer's properties and adjust its value (e.g., set it to drape on terrain only).
+
+![drape-fix.png](https://raw.githubusercontent.com/fi-group/clearly-support-page/main/images/drape-fix.png)
 ---
 
 ### 2. Why is the aerial photo quality better in 3D than in 2D?
@@ -16,6 +14,8 @@ Look for the **‘handling in map’** (or similar) setting within the layer's p
 This can happen if the **"High resolution"** setting is enabled, as it often only affects the 3D view and may default the 2D view to a lower-resolution level (e.g., level 18).
 
 To fix this, try **unchecking the "High resolution"** option. Then, manually define the 2D view to use the highest available resolution level (e.g., level 21).
+
+![photo-quality.png](https://raw.githubusercontent.com/fi-group/clearly-support-page/main/images/photo-quality.png)
 
 ---
 
@@ -33,17 +33,19 @@ Yes. In version 5.2.12 and later, the **advanced filter settings** include an **
 
 This issue can have several causes, even if feature info is correctly displayed when clicking.
 
-A common solution is to check the **layer's configuration**. In a known case (seen on [3drotterdam.nl](https://www.3drotterdam.nl/#/)), the problem was resolved by ticking a specific **checkbox in the layer configuration settings** that controlled 2D visibility. Double-check all visibility and mode settings for that layer.
+A common solution is to check the **layer's configuration**. In a known case, the problem was resolved by ticking a specific **checkbox in the layer configuration settings** that controlled 2D visibility. Double-check all visibility and mode settings for that layer.
+
+![2d-not-showing.png](https://raw.githubusercontent.com/fi-group/clearly-support-page/main/images/2d-not-showing.png)
 
 ---
 
 ### 5. I'm getting a "blocked by CORS policy" error. How do I fix this?
 
-A **"Cross-Origin Resource Sharing" (CORS)** error happens when a web application (e.g., `https://hub.clearly.app`) tries to request data from a server on a different domain (e.g., `https://www.gis.rotterdam.nl/gisweb2/wms`). The server, by default, blocks this for security.
+A **"Cross-Origin Resource Sharing" (CORS)** error happens when a web application (e.g., `https://hub.clearly.app`) tries to request data from a server on a different domain (e.g., `https://www.gis.example.nl/gisweb2/wms`). The server, by default, blocks this for security.
 
 To fix this, the **server** (the one hosting the data) must be configured to explicitly allow requests from the application's origin. This is done by adding an `Access-Control-Allow-Origin` header to the server's response, listing the allowed domains.
 
-For example, the server `www.gis.rotterdam.nl` would need to be updated to allow origins like `https://hub.clearly.app` and `https://www.3drotterdam.nl/`.
+For example, the server `www.gis.example.nl` would need to be updated to allow origins like `https://hub.clearly.app`.
 
 You can read more about the technical details here: [Cross-Origin Resource Sharing (Wikipedia)](https://en.m.wikipedia.org/wiki/Cross-origin_resource_sharing)
 
