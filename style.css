@@ -13,6 +13,7 @@ html, body {
     color: #333;
     line-height: 1.6;
     overflow: hidden; /* Prevent body-level scrolling */
+    max-width: 100%;
 }
 
 body {
@@ -267,12 +268,6 @@ body.dark-theme-home { background-color: #181818; color: #f0f0f0; }
     border: 1px solid #ccc;
 }
 
-/* Style adjustments for search results on a light background */
-#search-results-container {
-    background-color: #fff;
-    color: #333;
-}
-
 .search-result-item {
     color: #333;
     border-bottom: 1px solid #f0f0f0;
@@ -368,4 +363,90 @@ body.dark-theme-home { background-color: #181818; color: #f0f0f0; }
     
     .main-content-new { padding: 20px; }
     .product-selection { grid-template-columns: 1fr; }
+}
+
+/* === FIX: Responsive images inside markdown or general content === */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Ensure markdown images never overflow their container */
+.markdown-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1em auto;
+}
+
+/* === FIX: Long links / URLs breaking layout === */
+a, .markdown-container a {
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+/* === FIX: Code blocks or preformatted text wrapping === */
+pre, code {
+    white-space: pre-wrap; /* allow wrapping within code */
+    word-break: break-word;
+    overflow-x: auto; /* still allow horizontal scroll for real long code */
+}
+
+/* === FIX: Table or iframe containers not shrinking properly === */
+iframe, table {
+    max-width: 100%;
+}
+
+/* Optional safety net for overall layout */
+.page-container, .page-container-new, .main-content-new {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* === FOOTER LAYOUT FIX === */
+.main-footer {
+    position: relative;
+    display: flex;
+    justify-content: center; /* centers the main footer text */
+    align-items: center;
+    padding: 15px 20px;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+/* Keep admin controls aligned to the right on desktop */
+.main-footer .user-controls {
+    position: absolute;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* Button appearance */
+.login-logout {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #2596be;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+/* === Responsive: Stack footer elements neatly on small screens === */
+@media (max-width: 768px) {
+    .main-footer {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .main-footer .user-controls {
+        position: static; /* remove absolute positioning */
+        margin-top: 10px;
+        justify-content: center;
+    }
 }
