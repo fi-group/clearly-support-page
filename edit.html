@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="style.css">
 <link rel="icon" type="image/png" sizes="32x32" href="images/logo.png">
 
-
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <style>
@@ -43,7 +42,7 @@ select, input[type="text"], input[type="password"], textarea {
     box-sizing: border-box;
 }
 button {
-    width: 100%; 
+    width: fit-content; 
     padding: 10px; 
     margin-top: 5px; 
     font-size: 1em; 
@@ -54,6 +53,8 @@ button {
     border: none; 
     text-align: center;
     display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 button:disabled { 
     background-color: #a0a0a0; 
@@ -93,16 +94,11 @@ button:disabled {
     max-width: 500px; 
 }
 #token-modal h3 { margin-top: 0; }
-#token-modal button { 
-    width: 100%; 
-    padding: 10px; 
-    margin-top: 15px; 
-    background: #28a745; 
-}
+#token-modal button { padding: 10px; margin-top: 15px; background: #28a745; }
 /* Layout */
 .editor-grid { 
     display: grid; 
-    grid-template-columns: 3fr 1fr; 
+    grid-template-columns: 5fr 1fr; 
     gap: 25px; 
     align-items: start; 
 }
@@ -145,8 +141,8 @@ button:disabled {
     padding-top: 15px;
 }
 .home-link {
-    width: 100%;
-    margin: 15px 0 0 0;
+    width: fit-content;
+    margin: 15px auto 0 auto;
     padding: 10px 20px;
     background-color: #6c757d;
     color: white;
@@ -178,8 +174,11 @@ button:disabled {
     border-radius: 3px; 
     font-family: monospace; 
 }
-#save-button, #upload-image-button {
-    width: 100%;
+#user-name {
+  width: 50%;          
+  margin-top: 2px;
+  margin-left: 0;
+  margin-right: auto;
 }
 </style>
 </head>
@@ -187,9 +186,10 @@ button:disabled {
 
 <div id="token-overlay" style="display: none;">
     <div id="token-modal">
-        <h3>GitHub Access Token Required</h3>
-        <p>Please enter your GitHub Personal Access Token with <code>repo</code> scope to continue.</p>
-        <input type="password" id="pat-input" placeholder="Paste your token (ghp_...)" form="none">
+        <h2>GitHub Access Token Required</h2>
+        <p>Because this page is hosted on GitHub, changing content requires a GitHub account. Using the support account's GitHub credentials and token, you can update contents as if you were logged in.<br><br></p>
+        <p>Because of this, you need to provide a GitHub access token to unlock the editor. Search for 'SupportPage GitHub Token Clearly' on 1Password to get the token.</p>
+        <input type="password" id="pat-input" placeholder="Paste your token here..." form="none">
         <button id="pat-submit">Unlock Editor</button>
     </div>
 </div>
@@ -243,6 +243,8 @@ button:disabled {
             </div>
             <div class="editor-footer">
                 <div id="status-message"></div>
+                <label for="user-name">Your Name (for commit message):</label>
+                <input type="text" id="user-name" placeholder="Enter your name...">
                 <button type="button" id="save-button">Save Changes</button>
                 <a class="home-link" href="index.html">← Back to Home Page</a>
             </div>
@@ -289,8 +291,6 @@ button:disabled {
     </div>
 </div>
 
-<p id="access-denied">Access Denied. Please <a href="index.html">log in</a> as an administrator to use this page.</p>
-
 <script type="module">
 import { Octokit } from "https://esm.sh/octokit";
 import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
@@ -333,6 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const uploadButton = document.getElementById("upload-image-button");
     const imageUploader = document.getElementById("image-uploader");
     const latestMarkdown = document.getElementById("latest-markdown");
+    const userNameInput = document.getElementById("user-name");
 
     function unlockEditor() {
         tokenOverlay.style.display = "none";
@@ -434,65 +435,86 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   async function saveFile() {
-    saveButton.disabled = true;
-    statusMessage.style.display = "block";
-    statusMessage.textContent = "Saving...";
-    const filePath = selector.value;
-    try {
-      let { data: fileData } = await octokit.rest.repos.getContent({
-        owner: GITHUB_OWNER,
-        repo: GITHUB_REPO,
-        path: filePath,
-        ref: GITHUB_BRANCH,
-      });
+    const userName = userNameInput.value.trim();
+    if (!userName) {
+        statusMessage.style.display = "block";
+        statusMessage.textContent = "❌ Please enter your name to save changes.";
+        statusMessage.style.color = "red";
+        userNameInput.focus(); // Puts the cursor in the name box
+        return; 
+    }
+    // Validation passed
+    saveButton.disabled = true;
+    statusMessage.style.display = "block";
+    statusMessage.textContent = "Saving...";
+    statusMessage.style.color = "inherit"; // Resets color from potential red error
+    const filePath = selector.value;
 
-      const contentEncoded = btoa(unescape(encodeURIComponent(editor.value)));
+    // Save the name to local storage
+    localStorage.setItem("editor_user_name", userName);
 
-      try {
-        await octokit.rest.repos.createOrUpdateFileContents({
-          owner: GITHUB_OWNER,
-          repo: GITHUB_REPO,
-          path: filePath,
-          message: "Updated content from web editor",
-          content: contentEncoded,
-          sha: fileData.sha,
-          branch: GITHUB_BRANCH,
-        });
-      } catch (err) {
-        if (err.status === 409) { // SHA mismatch
-          const { data: latestData } = await octokit.rest.repos.getContent({
-            owner: GITHUB_OWNER,
-            repo: GITHUB_REPO,
-            path: filePath,
-            ref: GITHUB_BRANCH,
-          });
-          await octokit.rest.repos.createOrUpdateFileContents({
-            owner: GITHUB_OWNER,
-            repo: GITHUB_REPO,
-            path: filePath,
-            message: "Updated content from web editor",
-            content: contentEncoded,
-            sha: latestData.sha,
-            branch: GITHUB_BRANCH,
-          });
-        } else {
-          throw err;
-        }
-      }
+    // Create the commit message 
+    const commitMessage = `${userName}: Updated content from web editor`;
 
-      statusMessage.textContent = "✅ File saved successfully!";
-      statusMessage.style.color = "green";
-      setTimeout(() => loadFile(filePath), 1000);
+    try {
+      let { data: fileData } = await octokit.rest.repos.getContent({
+        owner: GITHUB_OWNER,
+        repo: GITHUB_REPO,
+        path: filePath,
+        ref: GITHUB_BRANCH,
+      });
 
-    } catch (error) {
-      console.error(error);
-      statusMessage.textContent = `❌ Error saving file: ${error.message}`;
-      statusMessage.style.color = "red";
-    } finally {
-      saveButton.disabled = false;
+      const contentEncoded = btoa(unescape(encodeURIComponent(editor.value)));
+
+      try {
+        await octokit.rest.repos.createOrUpdateFileContents({
+          owner: GITHUB_OWNER,
+          repo: GITHUB_REPO,
+          path: filePath,
+          message: commitMessage,
+          content: contentEncoded,
+          sha: fileData.sha,
+          branch: GITHUB_BRANCH,
+        });
+      } catch (err) {
+        if (err.status === 409) { // SHA mismatch
+          const { data: latestData } = await octokit.rest.repos.getContent({
+            owner: GITHUB_OWNER,
+            repo: GITHUB_REPO,
+            path: filePath,
+            ref: GITHUB_BRANCH,
+          });
+          await octokit.rest.repos.createOrUpdateFileContents({
+            owner: GITHUB_OWNER,
+            repo: GITHUB_REPO,
+            path: filePath,
+            message: commitMessage,
+            content: contentEncoded,
+            sha: latestData.sha,
+            branch: GITHUB_BRANCH,
+          });
+        } else {
+          throw err;
+        }
+      }
+
+      statusMessage.textContent = "✅ File saved successfully! It will take 1-2 minutes to rebuild the site again with the new content.";
+      statusMessage.style.color = "green";
+      setTimeout(() => loadFile(filePath), 1000);
+
+    } catch (error) {
+      console.error(error);
+      statusMessage.textContent = `❌ Error saving file: ${error.message}`;
+      statusMessage.style.color = "red";
+    } finally {
+      saveButton.disabled = false;
+    }
+  }
+
+  const storedName = localStorage.getItem("editor_user_name");
+    if (storedName) {
+        userNameInput.value = storedName;
     }
-  }
-
   uploadButton.addEventListener("click", () => imageUploader.click());
   imageUploader.addEventListener("change", (event) => {
     const file = event.target.files[0];
