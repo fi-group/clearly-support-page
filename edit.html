@@ -500,7 +500,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       statusMessage.textContent = "✅ File saved successfully! It will take 1-2 minutes to rebuild the site again with the new content.";
       statusMessage.style.color = "green";
-      setTimeout(() => loadFile(filePath), 1000);
+      setTimeout(() => loadFile(filePath), 6000);
 
     } catch (error) {
       console.error(error);
