@@ -336,11 +336,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const userNameInput = document.getElementById("user-name");
 
     function unlockEditor() {
-        tokenOverlay.style.display = "none";
-        editorContainer.style.display = "block";
-        document.getElementById("access-denied").style.display = "none";
-        loadFile(selector.value);
-    }
+        tokenOverlay.style.display = "none";
+        editorContainer.style.display = "block";
+        loadFile(selector.value);
+    }
 
     function handleTokenSubmit() {
         const pat = patInput.value.trim();
